@@ -1,5 +1,9 @@
+/* Your company employs 200 people. They keep records of all the employee information in the *Employees.csv* file, which contains the following
+columns: first name, last name, department, position, and salary. However, they would like to sort the data; first, they would like to group
+the rows by department lexicographically, and then they would like to sort the rows by salary.
+As a Java developer, you have been assigned to create a Java application that is capable of carrying out this task.
+*/
 package Exercises;
-
 
 import java.io.BufferedReader;
 import java.io.FileReader;
