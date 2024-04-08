@@ -1,7 +1,5 @@
 package com.boot.todo.controller;
 
-import com.boot.todo.enitites.Todo;
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +13,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.boot.todo.servicie.TodoService;
+import com.boot.todo.entities.Todo;
+import com.boot.todo.service.TodoService;
+
 
 @RestController
 public class TodoController {
