@@ -28,6 +28,17 @@ public class Todo {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	
+	
+	public Todo(int id, String title, Date date, String status) {
+		super();
+		this.id = id;
+		this.title = title;
+		this.date = date;
+		this.status = status;
+	}
+
+
 	public int getId() {
 		return id;
 	}
