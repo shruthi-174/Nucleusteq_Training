@@ -28,10 +28,10 @@ import com.boot.todo.service.TodoService;
 public class TodoServiceTests {
 	
 	@Mock
-	private TodoRepository tr;
+	private TodoRepository todorepository;
 	
 	@InjectMocks
-	private TodoService ts;
+	private TodoService todoservice;
 	private  Todo todo1;
 	private Todo todo2;
 	
@@ -60,18 +60,18 @@ public class TodoServiceTests {
 		List<Todo> list=new ArrayList<>();
 		list.add(todo1);
 		list.add(todo2);
-		when(tr.findAll()).thenReturn(list);
+		when(todorepository.findAll()).thenReturn(list);
 		
-		List<Todo> result=ts.getAllTodoList();
+		List<Todo> result=todoservice.getAllTodoList();
 		assertThat(result.size()).isEqualTo(2);
 		assertEquals("Project Presentation",result.get(0).getTitle());
 	}
 	
 	@Test
 	public void testGetTodoListById() {
-	 	when(tr.findById(1)).thenReturn(Optional.ofNullable(todo1));
+	 	when(todorepository.findById(1)).thenReturn(Optional.ofNullable(todo1));
 		
-		Todo result=ts.getTodoListById(1);
+		Todo result=todoservice.getTodoListById(1);
 		assertThat(result).isNotNull();
 		assertThat(result).isEqualTo(todo1);
 	}
@@ -80,9 +80,9 @@ public class TodoServiceTests {
 	public void testAddItem() {
 		Todo newTodo=new Todo(11,"Yoga",new Date(),"Completed");
 		
-	 	when(tr.save(newTodo)).thenReturn(newTodo);
+	 	when(todorepository.save(newTodo)).thenReturn(newTodo);
 		
-		Todo result=ts.addItem(newTodo);
+		Todo result=todoservice.addItem(newTodo);
 		assertThat(result).isNotNull();
 		assertThat(result.getId()).isGreaterThan(0);
 	}
@@ -90,33 +90,33 @@ public class TodoServiceTests {
 	@Test
 	public void testUpdateStatus() {
 		todo1.setStatus("Completed");
-	 	when(tr.findById(1)).thenReturn(Optional.ofNullable(todo1));
-	 	when(tr.save(todo1)).thenReturn(todo1);
+	 	when(todorepository.findById(1)).thenReturn(Optional.ofNullable(todo1));
+	 	when(todorepository.save(todo1)).thenReturn(todo1);
 		
-		boolean result=ts.updateStatus("Completed",1);
+		boolean result=todoservice.updateStatus("Completed",1);
 		assertThat(result).isTrue();
 		assertThat(todo1.getStatus()).isEqualTo("Completed");
-		verify(tr,times(1)).save(todo1);
+		verify(todorepository,times(1)).save(todo1);
 	}
 	
 	@Test
 	public void testEditTodoItem() {
 		todo1.setTitle("Updated");	
-	 	when(tr.findById(1)).thenReturn(Optional.ofNullable(todo1));
-	 	when(tr.save(todo1)).thenReturn(todo1);
+	 	when(todorepository.findById(1)).thenReturn(Optional.ofNullable(todo1));
+	 	when(todorepository.save(todo1)).thenReturn(todo1);
 		
-		Todo result=ts.editTodoItem(todo1,1);
+		Todo result=todoservice.editTodoItem(todo1,1);
 		assertThat(result.getTitle()).isEqualTo("Updated");
 	}
 	
 	@Test
 	public void testDeleteTodoList() {
-	 	when(tr.findById(1)).thenReturn(Optional.ofNullable(todo1));
-	 	doNothing().when(tr).deleteById(1);
+	 	when(todorepository.findById(1)).thenReturn(Optional.ofNullable(todo1));
+	 	doNothing().when(todorepository).deleteById(1);
 		
-		boolean result=ts.deleteTodoList(1);
+		boolean result=todoservice.deleteTodoList(1);
 		assertThat(result).isTrue();
-		verify(tr,times(1)).deleteById(1);
+		verify(todorepository,times(1)).deleteById(1);
 	}
 		
 }
