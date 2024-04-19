@@ -43,13 +43,13 @@ public class TodoController {
 	
 	
 	@PostMapping("/todo")
-	public ResponseEntity<Todo> addTodo(@RequestBody Todo todo){
-		Todo newtodo=todoservice.addItem(todo);
-		if(newtodo!=null) {
-			return ResponseEntity.status(HttpStatus.CREATED).body(newtodo);
-		}
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-	}
+    public ResponseEntity<Todo> addTodo(@RequestBody Todo todo){
+        Todo newTodo = todoservice.addItem(todo);
+        if (newTodo != null) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(newTodo);
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
 	
 	@PutMapping("/todo/{id}/status")
 	public ResponseEntity<Todo> updateTodoStatus(@RequestBody String newStatus,@PathVariable("id") int id){

@@ -1,87 +1,123 @@
 package com.boot.todo.repository;
-import com.boot.todo.entities.Todo;
-import com.boot.todo.repository.TodoRepository;
+
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
+import javax.persistence.EntityManager;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import com.boot.todo.entities.Todo;
+import com.boot.todo.repository.TodoRepository;
 
 @DataJpaTest
 class TodoRepositoryTests {
 
+	@Autowired
+	private EntityManager entityManager;
+	
     @Autowired
     private TodoRepository todoRepository;
 
-    private Todo todo1;
-    private Todo todo2;
-    private Todo savedTodo1;
-    private Todo savedTodo2;
+    private Todo todo1, todo2;
+    private Todo savedTodo1, savedTodo2;
 
     @BeforeEach
     void setUp() throws ParseException {
+        // Create the table if it doesn't exist
+        entityManager.createNativeQuery("CREATE TABLE IF NOT EXISTS todo (id INT AUTO_INCREMENT PRIMARY KEY, title VARCHAR(255), date DATE, status VARCHAR(255))").executeUpdate();
+
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date date1 = dateFormat.parse("2024-04-05");
         Date date2 = dateFormat.parse("2024-03-30");
+
         todo1 = new Todo(1, "Project Presentation", date1, "Pending");
         todo2 = new Todo(2, "Exercise", date2, "Completed");
+
         savedTodo1 = todoRepository.save(todo1);
         savedTodo2 = todoRepository.save(todo2);
     }
 
     @AfterEach
     void tearDown() {
-        todoRepository.deleteAll();
+        // Drop the table after each test
+        entityManager.createNativeQuery("DROP TABLE todo").executeUpdate();
+    }
+
+
+    @Test
+    void testFindById() {
+        Todo savedTodo = todoRepository.save(todo1);
+        Optional<Todo> foundTodo = todoRepository.findById(savedTodo.getId());
+        assertTrue(foundTodo.isPresent());
+        assertEquals(savedTodo, foundTodo.get());
+    }
+
+
+    @Test
+    void testFindAll() {
+        List<Todo> todoList = todoRepository.findAll();
+        assertEquals(2, todoList.size());
+        assertTrue(todoList.contains(savedTodo1));
+        assertTrue(todoList.contains(savedTodo2));
     }
 
     @Test
-    void testGetTodoById() {
-        Todo todo = todoRepository.findById(savedTodo1.getId()).orElse(null);
-        assertThat(todo).isNotNull();
-        assertThat(todo).isEqualTo(savedTodo1);
+    void testDeleteById() {
+        Todo savedTodo = todoRepository.save(todo1);
+        todoRepository.deleteById(savedTodo.getId());
+        Optional<Todo> foundTodo = todoRepository.findById(savedTodo.getId());
+        assertFalse(foundTodo.isPresent());
     }
-    
-    @Test
-    void testGetAllTodoList() {
-    	List<Todo> ls=todoRepository.findAll();
-    	assertThat(ls.size()).isEqualTo(2);
-    	assertThat(ls).contains(savedTodo1,savedTodo2);
-    }
-    
     @Test
     void testAddItem() {
-    	Todo todo=new Todo(121,"Yoga",new Date(),"Pending");
-    	todoRepository.save(todo);
-    	
-    	assertThat(todo).isNotNull();
-    	assertThat(todo.getId()).isGreaterThan(0);
+        Todo newTodo = new Todo(1,"New Task", new Date(), "Pending");
+        Todo savedTodo = todoRepository.save(newTodo);
+
+        assertNotNull(savedTodo);
+        assertNotNull(savedTodo.getId());
+        assertEquals(newTodo.getTitle(), savedTodo.getTitle());
+        assertEquals(newTodo.getDate(), savedTodo.getDate());
+        assertEquals(newTodo.getStatus(), savedTodo.getStatus());
     }
-    
-  @Test
-  void testUpdateStatus() {
-  	savedTodo1.setStatus("Completed");
-  	Todo updatedTodo=todoRepository.save(savedTodo1);
-  	assertThat(updatedTodo.getStatus()).isEqualTo("Completed");
-  }
-    
+
+    @Test
+    void testUpdateStatus() {
+        Todo savedTodo = todoRepository.save(todo1);
+        String newStatus = "Completed";
+        savedTodo.setStatus(newStatus);
+        Todo updatedTodo = todoRepository.save(savedTodo);
+
+        assertNotNull(updatedTodo);
+        assertEquals(newStatus, updatedTodo.getStatus());
+    }
+
     @Test
     void testEditTodoItem() {
-    	savedTodo1.setTitle("PP");
-    	Todo updatedTodo=todoRepository.save(savedTodo1);
-    	assertThat(updatedTodo.getTitle()).isEqualTo("PP");
+        Todo savedTodo = todoRepository.save(todo1);
+        String newTitle = "Updated Task";
+        Date newDate = new Date();
+        savedTodo.setTitle(newTitle);
+        savedTodo.setDate(newDate);
+        Todo updatedTodo = todoRepository.save(savedTodo);
+
+        assertNotNull(updatedTodo);
+        assertEquals(newTitle, updatedTodo.getTitle());
+        assertEquals(newDate, updatedTodo.getDate());
     }
     
-  @Test
-  void testDeleteTodoList() {
-  	todoRepository.deleteById(savedTodo1.getId());
-  	Todo deletedTodo=todoRepository.findById(savedTodo1.getId()).orElse(null);
-  	assertThat(deletedTodo).isNull();
-  }
+
 }
