@@ -10,5 +10,6 @@ public class EmployeeManagementPortalApplication {
 		SpringApplication.run(EmployeeManagementPortalApplication.class, args);
 		System.out.println("WORKING");
 	}
+	
 
 }

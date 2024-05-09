@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manager Dashboard</title>
+    <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <nav class="navbar">
+                <div class="navbar-logo">
+                    <a href="/html/index.html"><img src="/images/logo.png" alt="Company Logo" class="logo"></a>
+                </div>
+                <div class="navbar-menu">
+                    <a href="#" class="logout-btn">Logout</a>
+                </div>
+            </nav>
+        </header>
+        <div class="sidebar" id="sidebar">
+            <ul class="nav-links">
+                <li>
+                    <div class="sidebar-item" id="editProfileLink">
+                        <a href="#">Edit Profile</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <main class="main-content">
+            <h1 style="text-align: center;">Manager Dashboard</h1>
+            <div id="userList">
+                <!-- User list will be populated here -->
+            </div>
+            <div id="editProfileModal" class="modal">
+                <div class="modal-content">
+                    <span class="close-btn">&times;</span>
+                    <h2>Edit Profile</h2>
+                    <form id="editProfileForm" class="form-container">
+                        <div>
+                            <label for="firstname">First Name:</label><br>
+                            <input type="text" id="firstname" name="firstname" class="form-input"><br>
+                            <span id="firstnameError" class="error"></span>
+                        </div>
+                        <div>
+                            <label for="lastname">Last Name:</label><br>
+                            <input type="text" id="lastname" name="lastname" class="form-input"><br>
+                            <span id="lastnameError" class="error"></span>
+                        </div>
+                        <div>
+                            <label for="email">Email:</label><br>
+                            <input type="email" id="email" name="email" class="form-input"><br>
+                            <span id="emailError" class="error"></span>
+                        </div>
+                        <div>
+                            <label for="password">Password:</label><br>
+                            <input type="password" id="password" name="password" class="form-input"><br>
+                            <span id="passwordError" class="error"></span>
+                        </div>
+                        <button type="submit" id="updateProfileButton" class="form-submit">Update Profile</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="/js/dashboard.js"></script>
+</body>
+</html>
