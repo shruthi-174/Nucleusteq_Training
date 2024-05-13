@@ -49,7 +49,6 @@ if (registerForm) {
         const selectedRole = roleSelect.value;
 
         // Only allow registration if the selected role is 'ADMIN'
-
         if (isValid && selectedRole === 'ADMIN') {
             const response = await fetch('/api/register', {
                 method: 'POST',
@@ -113,8 +112,8 @@ if (loginForm) {
 
             if (response.ok) {
                 const data = await response.json();
-                const userId = data.user_id; // Replace 'userIdPlaceholder' with 'user_id'
-                const role = data.role; // Replace 'rolePlaceholder' with 'role'
+                const userId = data.user_id; 
+                const role = data.role; 
 
                 // Store the user ID in sessionStorage or localStorage
                 sessionStorage.setItem('userId', userId);

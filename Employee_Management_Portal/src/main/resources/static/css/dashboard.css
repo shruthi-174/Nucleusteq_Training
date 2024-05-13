@@ -21,7 +21,7 @@ body {
     justify-content: space-between;
     padding: 10px 20px;
     background-color: #b1d3f7;  
-    color: #fff; /* White text */
+    color: #fff; 
 }
 
 .logo-container img {
@@ -50,11 +50,12 @@ body {
 }
 
 .logout-btn {
-    background-color: #fff;
-    color: #007bff;
+     background-color: #fff;
+    color: #1f33b6;
     padding: 8px 16px;
     border-radius: 5px;
     text-decoration: none;
+    font-weight: bold;
 }
 
 /* Sidebar */
@@ -73,14 +74,14 @@ body {
     z-index: 1;
 }
 .sidebar-item {
-    padding: 10px 20px; /* Adjust padding as needed */
-    margin-bottom: 5px; /* Add margin between items */
+    padding: 10px 20px; 
+    margin-bottom: 5px;
 }
 
 /* Hover Effect for Sidebar Items */
 .sidebar-item:hover {
     background-color: #234bdbb5; 
-    color: #fff; /* White text on hover */
+    color: #fff; 
 }
 
 
@@ -129,7 +130,7 @@ body {
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+    background-color: rgba(0, 0, 0, 0.5);
 }
 
 .modal-content {
@@ -151,7 +152,7 @@ body {
 
 /* Space between Navbar and Sidebar */
 .main-content {
-    margin-top: 60px; /* Adjust as needed */
+    margin-top: 60px; 
 }
 
 /* Form styling */

@@ -22,6 +22,51 @@ import javax.persistence.Table;
 	    @JoinColumn(name = "manager_user_id")
 	    private User manager;
 
-	    // Getters and setters
+		public Project() {
+			super();
+			// TODO Auto-generated constructor stub
+		}
+
+		public Project(Long projectId, String name, String description, User manager) {
+			super();
+			this.projectId = projectId;
+			this.name = name;
+			this.description = description;
+			this.manager = manager;
+		}
+
+		public Long getProjectId() {
+			return projectId;
+		}
+
+		public void setProjectId(Long projectId) {
+			this.projectId = projectId;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public String getDescription() {
+			return description;
+		}
+
+		public void setDescription(String description) {
+			this.description = description;
+		}
+
+		public User getManager() {
+			return manager;
+		}
+
+		public void setManager(User manager) {
+			this.manager = manager;
+		}
+
+	    
 	}
     
