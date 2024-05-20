@@ -1,21 +1,23 @@
 package com.emp.entities;
+import java.io.Serializable;
+
 import javax.persistence.*;
 
 
 @Entity
-@Table(name= "employee_skills")
+@Table(name = "employee_skills")
 public class EmployeeSkill {
+	 @EmbeddedId
+	    private EmployeeSkillId id;
 
-	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long employeeSkillId;
+	    @Embeddable
+	    public static class EmployeeSkillId implements Serializable {
+	        @Column(name = "employee_user_id") 
+	        private Long employeeUserId;
 
-    @ManyToOne
-    @JoinColumn(name = "employee_user_id")
-    private User employee;
+	        @Column(name = "skill_id") 
+	        private Long skillId;
 
-    @ManyToOne
-    @JoinColumn(name = "skill_id")
-    private Skill skill;
-	
+	       
+	    }
 }

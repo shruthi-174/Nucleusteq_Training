@@ -1,110 +1,126 @@
-// Manager Dashboard
-const editProfileLink = document.getElementById('editProfileLink');
-const editProfileModal = document.getElementById('editProfileModal');
-const closeEditProfileBtn = document.querySelector('.close-btn');
+//EDIT PROFILE 
+const editProfileLinkManager = document.getElementById('editProfileLinkManager');
+const editProfileModalManager = document.getElementById('editProfileModalManager');
+const closeModalBtnManager = document.querySelector('.close-btn-manager');
+const editProfileFormManager = document.getElementById('editProfileFormManager');
 
-if (editProfileLink && editProfileModal && closeEditProfileBtn) {
-    editProfileLink.addEventListener('click', function() {
-        editProfileModal.style.display = 'block';
+function showEditProfileModalManager() {
+  editProfileModalManager.style.display = 'block';
+}
+
+function hideEditProfileModalManager() {
+  editProfileModalManager.style.display = 'none';
+}
+
+editProfileLinkManager.addEventListener('click', showEditProfileModalManager);
+
+closeModalBtnManager.addEventListener('click', hideEditProfileModalManager);
+
+editProfileFormManager.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const firstname = document.getElementById('firstname').value;
+  const lastname = document.getElementById('lastname').value;
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+
+  if (!email.endsWith('@nucleusteq.com')) {
+    alert('Email must end with @nucleusteq.com');
+    return;
+  }
+
+  if (password.length < 3) {
+    alert('Password must be at least 3 characters long.');
+    return;
+  }
+
+  const containsLetter = /[a-zA-Z]/.test(password);
+  const containsNumber = /\d/.test(password);
+
+  if (!containsLetter || !containsNumber) {
+    alert('Password must contain at least one letter and one number.');
+    return;
+  }
+
+  try {
+    const userId = await getUserId();
+
+    const response = await fetch(`/api/manager/update-profile/${userId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      },
+      body: JSON.stringify({ firstname, lastname, email, password }),
     });
 
-    closeEditProfileBtn.addEventListener('click', function() {
-        editProfileModal.style.display = 'none';
-    });
-
-    window.addEventListener('click', function(event) {
-        if (event.target === editProfileModal) {
-            editProfileModal.style.display = 'none';
-        }
-    });
-
-    const editProfileForm = document.getElementById('editProfileForm');
-
-    if (editProfileForm) {
-        editProfileForm.addEventListener('submit', async function(event) {
-            event.preventDefault();
-
-            const firstname = document.getElementById('firstname').value;
-            const lastname = document.getElementById('lastname').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-
-            let isValid = true;
-            document.querySelectorAll('.error').forEach(function(span) {
-                span.textContent = '';
-            });
-
-            if (!firstname.trim()) {
-                document.getElementById('firstnameError').textContent = 'First name is required';
-                isValid = false;
-            }
-
-            if (!lastname.trim()) {
-                document.getElementById('lastnameError').textContent = 'Last name is required';
-                isValid = false;
-            }
-
-            if (!email.trim()) {
-                document.getElementById('emailError').textContent = 'Email is required';
-                isValid = false;
-            } else if (!email.trim().endsWith('@nucleusteq.com')) {
-                document.getElementById('emailError').textContent = 'Email must end with @nucleusteq.com';
-                isValid = false;
-            }
-
-            if (!password.trim()) {
-                document.getElementById('passwordError').textContent = 'Password is required';
-                isValid = false;
-            } else if (password.trim().length < 3) {
-                document.getElementById('passwordError').textContent = 'Password must have at least 3 characters';
-                isValid = false;
-            } else if (!password.trim().match(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{3,}$/)) {
-                document.getElementById('passwordError').textContent = 'Password must contain letters and numbers';
-                isValid = false;
-            }
-
-            if (isValid) {
-                const userId = sessionStorage.getItem('userId') || localStorage.getItem('userId');
-
-                if (!userId) {
-                    console.error('User ID is not available.');
-                    return;
-                }
-
-                const url = `/api/users/manager/${userId}`; // Fix the URL
-
-                const requestBody = {
-                    firstname: firstname,
-                    lastname: lastname,
-                    email: email,
-                    password: password
-                };
-
-                const response = await fetch(url, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(requestBody)
-                });
-
-                if (response.ok) {
-                    alert('Profile updated successfully!');
-                } else {
-                    const errorMessage = await response.text();
-                    alert('Failed to update profile: ' + errorMessage);
-                }
-            }
-        });
+    if (response.ok) {
+      const message = await response.text();
+      alert(message);
+      hideEditProfileModalManager();
+    } else {
+      const error = await response.text();
+      alert(error);
     }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('An error occurred while updating the profile');
+  }
+});
+
+async function getUserId() {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('No token found');
+    }
+
+    const response = await fetch('/api/users/role', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (response.ok) {
+      const role = await response.text();
+      if (role === 'ROLE_MANAGER') {
+        const userId = localStorage.getItem('userId');
+        if (userId) {
+          return userId;
+        } else {
+          const userResponse = await fetch('/api/users/email', {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          });
+
+          if (userResponse.ok) {
+            const user = await userResponse.json();
+            localStorage.setItem('userId', user.userId);
+            return user.userId;
+          } else {
+            throw new Error('Failed to fetch user data');
+          }
+        }
+      } else {
+        throw new Error('Unauthorized access');
+      }
+    } else {
+      throw new Error('Failed to get user role');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('An error occurred while fetching user data');
+  }
 }
 
 // Logout functionality
 const logoutBtn = document.querySelector('.logout-btn');
-
 if (logoutBtn) {
-    logoutBtn.addEventListener('click', function(event) {
-        event.preventDefault();
-        window.location.href = '/html/index.html';
-    });
+  logoutBtn.addEventListener('click', function(event) {
+    event.preventDefault();
+    localStorage.removeItem('token');
+    localStorage.removeItem('userId'); 
+    window.location.href = '/html/index.html';
+  });
 }

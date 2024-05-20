@@ -8,10 +8,7 @@ body {
 
 /* Container */
 .container {
-    width: 100%;
-    height: 100vh;
     display: flex;
-    flex-direction: column;
 }
 
 /* Logo Container */
@@ -20,8 +17,8 @@ body {
     align-items: center;
     justify-content: space-between;
     padding: 10px 20px;
-    background-color: #b1d3f7;  
-    color: #fff; 
+    background-color: #b1d3f7;
+    color: #fff;
 }
 
 .logo-container img {
@@ -37,6 +34,10 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 10px 20px;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 2;
 }
 
 .navbar-logo img {
@@ -50,40 +51,40 @@ body {
 }
 
 .logout-btn {
-     background-color: #fff;
+    background-color: #fff;
     color: #1f33b6;
     padding: 8px 16px;
     border-radius: 5px;
     text-decoration: none;
     font-weight: bold;
+    margin-right: 35px;
 }
 
 /* Sidebar */
 .sidebar {
     width: 250px;
-    background-color: #333; 
+    background-color: #333;
     padding: 20px;
-    color: #333;
-    display: block;
+    color: #fff;
     position: fixed;
-    top: 69px;
+    top: 60px; 
     bottom: 0;
     left: 0;
     overflow-y: auto;
     transition: width 0.3s ease;
     z-index: 1;
 }
-.sidebar-item {
-    padding: 10px 20px; 
-    margin-bottom: 5px;
-}
 
 /* Hover Effect for Sidebar Items */
 .sidebar-item:hover {
-    background-color: #234bdbb5; 
-    color: #fff; 
+    background-color: #234bdbb5;
+    color: #fff;
 }
 
+.sidebar-item {
+    padding: 10px 20px;
+    margin-bottom: 5px;
+}
 
 /* User Info */
 .user-info {
@@ -117,9 +118,18 @@ body {
 
 .nav-links a {
     text-decoration: none;
-    color: white; 
+    color: white;
 }
 
+/* Main Content */
+.main-content {
+    margin-left: 250px;
+    padding: 20px;
+    background-color: #ecf0f1;
+    flex: 1;
+    margin-top: 60px; 
+    min-height: 86vh;
+}
 
 /* Modal */
 .modal {
@@ -139,8 +149,10 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
     background-color: #fff;
-    padding: 20px;
+    padding: 28px;
     border-radius: 10px;
+    width: 90%;
+    max-width: 500px;
 }
 
 .close-btn {
@@ -152,19 +164,21 @@ body {
 
 /* Space between Navbar and Sidebar */
 .main-content {
-    margin-top: 60px; 
+    margin-top: 60px;
 }
 
 /* Form styling */
 .form-container {
-    padding: 20px;
+    padding: 30px;
     background-color: #fff;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: left; 
 }
 
 .form-container h2 {
     margin-bottom: 20px;
+    text-align: center; 
 }
 
 .form-input {
@@ -182,15 +196,198 @@ body {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    width: 100%; 
 }
 
 .form-submit:hover {
     background-color: #0056b3;
 }
-.form-container > div {
-            margin-bottom: 10px;
-        }
+
 .error {
     color: red;
     font-size: 14px;
+}
+
+/* ADMIN DASHBOARD*/
+
+/* User Table Container */
+#userTableContainer, #projectTableContainer, #manageUsersContainer {
+    text-align: center;
+}
+
+/* User Table */
+#userTable, #projectTable, #manageUsersTable {
+    margin: 0 auto;
+    width: 80%;
+    border-collapse: collapse;
+    background-color: white;
+}
+
+#userTable th, #userTable td,
+#projectTable th, #projectTable td,
+#manageUsersTable th, #manageUsersTable td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+#userTable th, #projectTable th, #manageUsersTable th {
+    background-color: #3498db;
+    color: white;
+}
+
+#userTable tr:hover, #projectTable tr:hover, #manageUsersTable tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Additional Styles */
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    margin-left: 40px;
+}
+
+.create-user-btn, .create-project-btn {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+}
+
+/* Button Styles */
+.unassign-btn {
+    background-color: #ff6347;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+.create-project-btn {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+}
+
+.delete-btn {
+    background-color: #ff6347;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+.edit-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+#manageUsersTable .delete-btn {
+    margin-left: 5px; 
+}
+
+#manageUsersTable .edit-btn {
+    margin-right: 5px; 
+}
+
+/* Modal Enhancements */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 28px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 300px;
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+}
+
+/* Form Container Enhancements */
+.form-container {
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: left; 
+}
+
+.form-container h2 {
+    margin-bottom: 20px;
+    text-align: center; 
+}
+
+.form-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.form-submit {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%; 
+}
+
+.form-submit:hover {
+    background-color: #0056b3;
+}
+
+.error {
+    color: red;
+    font-size: 14px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
 }

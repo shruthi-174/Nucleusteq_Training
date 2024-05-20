@@ -1,110 +1,128 @@
-// Employee Dashboard
-const editProfileLinkEmployee = document.getElementById('editProfileLinkEmployee'); // Change the variable name
-const editProfileModalEmployee = document.getElementById('editProfileModalEmployee'); // Change the variable name
-const closeEditProfileBtnEmployee = document.querySelector('.close-btn-employee');
+//EDIT PROFILE 
+const editProfileLinkEmployee = document.getElementById('editProfileLinkEmployee');
+const editProfileModalEmployee = document.getElementById('editProfileModalEmployee');
+const closeModalBtnEmployee = document.querySelector('.close-btn-employee');
+const editProfileFormEmployee = document.getElementById('editProfileFormEmployee');
 
-if (editProfileLinkEmployee && editProfileModalEmployee && closeEditProfileBtnEmployee) {
-    editProfileLinkEmployee.addEventListener('click', function() {
-        editProfileModalEmployee.style.display = 'block';
-    });
 
-    closeEditProfileBtnEmployee.addEventListener('click', function() {
-        editProfileModalEmployee.style.display = 'none';
-    });
-
-    window.addEventListener('click', function(event) {
-        if (event.target === editProfileModalEmployee) {
-            editProfileModalEmployee.style.display = 'none';
-        }
-    });
-
-    const editProfileFormEmployee = document.getElementById('editProfileFormEmployee');
-
-    if (editProfileFormEmployee) {
-        editProfileFormEmployee.addEventListener('submit', async function(event) {
-            event.preventDefault();
-
-            const firstname = document.getElementById('firstname').value;
-            const lastname = document.getElementById('lastname').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-
-            let isValid = true;
-            document.querySelectorAll('.error').forEach(function(span) {
-                span.textContent = '';
-            });
-
-            if (!firstname.trim()) {
-                document.getElementById('firstnameError').textContent = 'First name is required';
-                isValid = false;
-            }
-
-            if (!lastname.trim()) {
-                document.getElementById('lastnameError').textContent = 'Last name is required';
-                isValid = false;
-            }
-
-            if (!email.trim()) {
-                document.getElementById('emailError').textContent = 'Email is required';
-                isValid = false;
-            } else if (!email.trim().endsWith('@nucleusteq.com')) {
-                document.getElementById('emailError').textContent = 'Email must end with @nucleusteq.com';
-                isValid = false;
-            }
-
-            if (!password.trim()) {
-                document.getElementById('passwordError').textContent = 'Password is required';
-                isValid = false;
-            } else if (password.trim().length < 3) {
-                document.getElementById('passwordError').textContent = 'Password must have at least 3 characters';
-                isValid = false;
-            } else if (!password.trim().match(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{3,}$/)) {
-                document.getElementById('passwordError').textContent = 'Password must contain letters and numbers';
-                isValid = false;
-            }
-
-            if (isValid) {
-                const userId = sessionStorage.getItem('userId') || localStorage.getItem('userId');
-
-                if (!userId) {
-                    console.error('User ID is not available.');
-                    return;
-                }
-
-                const url = `/api/users/employee/${userId}`;
-
-                const requestBody = {
-                    firstname: firstname,
-                    lastname: lastname,
-                    email: email,
-                    password: password
-                };
-
-                const response = await fetch(url, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(requestBody)
-                });
-
-                if (response.ok) {
-                    alert('Profile updated successfully!');
-                } else {
-                    const errorMessage = await response.text();
-                    alert('Failed to update profile: ' + errorMessage);
-                }
-            }
-        });
-    }
+function showEditProfileModalEmployee() {
+  editProfileModalEmployee.style.display = 'block';
 }
 
-//Logout functionality
-const logoutBtnEmployee = document.querySelector('.logout-btn');
+function hideEditProfileModalEmployee() {
+  editProfileModalEmployee.style.display = 'none';
+}
 
-if (logoutBtnEmployee) {
-    logoutBtnEmployee.addEventListener('click', function(event) {
+editProfileLinkEmployee.addEventListener('click', showEditProfileModalEmployee);
+
+closeModalBtnEmployee.addEventListener('click', hideEditProfileModalEmployee);
+
+editProfileFormEmployee.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const firstname = document.getElementById('firstname').value;
+  const lastname = document.getElementById('lastname').value;
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+
+  // Validations
+  if (!email.endsWith('@nucleusteq.com')) {
+    alert('Email must end with @nucleusteq.com');
+    return;
+  }
+
+  if (password.length < 3) {
+    alert('Password must be at least 3 characters long.');
+    return;
+  }
+
+  const containsLetter = /[a-zA-Z]/.test(password);
+  const containsNumber = /\d/.test(password);
+
+  if (!containsLetter || !containsNumber) {
+    alert('Password must contain at least one letter and one number.');
+    return;
+  }
+  
+  try {
+    const userId = await getUserId();
+
+    const response = await fetch(`/api/employee/update-profile/${userId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      },
+      body: JSON.stringify({ firstname, lastname, email, password }),
+    });
+
+    if (response.ok) {
+      const message = await response.text();
+      alert(message);
+      hideEditProfileModalEmployee();
+    } else {
+      const error = await response.text();
+      alert(error);
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('An error occurred while updating the profile');
+  }
+});
+
+async function getUserId() {
+	  try {
+	    const token = localStorage.getItem('token');
+	    if (!token) {
+	      throw new Error('No token found');
+	    }
+
+	    const response = await fetch('/api/users/role', {
+	      headers: {
+	        'Authorization': `Bearer ${token}`,
+	      },
+	    });
+
+	    if (response.ok) {
+	      const role = await response.text();
+	      if (role === 'ROLE_EMPLOYEE') {
+	        const userId = localStorage.getItem('userId');
+	        if (userId) {
+	          return userId;
+	        } else {
+	          const userResponse = await fetch('/api/users/email', {
+	            headers: {
+	              'Authorization': `Bearer ${token}`,
+	            },
+	          });
+
+	          if (userResponse.ok) {
+	            const user = await userResponse.json();
+	            localStorage.setItem('userId', user.userId);
+	            return user.userId;
+	          } else {
+	            throw new Error('Failed to fetch user data');
+	          }
+	        }
+	      } else {
+	        throw new Error('Unauthorized access');
+	      }
+	    } else {
+	      throw new Error('Failed to get user role');
+	    }
+	  } catch (error) {
+	    console.error('Error:', error);
+	    alert('An error occurred while fetching user data');
+	  }
+	}
+
+// Logout functionality
+const logoutBtn = document.querySelector('.logout-btn');
+if (logoutBtn) {
+    logoutBtn.addEventListener('click', function(event) {
         event.preventDefault();
+        localStorage.removeItem('token');
+        localStorage.removeItem('userId'); 
         window.location.href = '/html/index.html';
     });
 }

@@ -1,39 +1,28 @@
 package com.emp.entities;
 
+import java.util.List;
+
 import javax.persistence.*;
 
 @Entity
-@Table(name= "skills")
+@Table(name = "skills")
 public class Skill {
 
-	@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long skill_id;
-	
-	private String name;
+    private Long skillId;
 
+    private String name;
+
+    @OneToMany(mappedBy = "skill")
+    private List<RequestResource> skillRequestResources;
+    
+    @ManyToMany(mappedBy = "skills", cascade = CascadeType.ALL)
+    private List<User> employees;
+    
 	public Skill() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public Skill(Long skill_id, String name) {
-		super();
-		this.skill_id = skill_id;
-		this.name = name;
-	}
-	public Long getSkill_id() {
-		return skill_id;
-	}
-	public void setSkill_id(Long skill_id) {
-		this.skill_id = skill_id;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-
-
 	
 }

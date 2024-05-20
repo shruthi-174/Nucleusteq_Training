@@ -21,7 +21,7 @@
         <div class="sidebar" id="sidebar">
             <ul class="nav-links">
                 <li>
-                    <div class="sidebar-item" id="editProfileLink">
+                    <div class="sidebar-item" id="editProfileLinkManager">
                         <a href="#">Edit Profile</a>
                     </div>
                 </li>
@@ -32,29 +32,29 @@
             <div id="userList">
                 <!-- User list will be populated here -->
             </div>
-            <div id="editProfileModal" class="modal">
+            <div id="editProfileModalManager" class="modal">
                 <div class="modal-content">
-                    <span class="close-btn">&times;</span>
+                    <span class="close-btn-manager">&times;</span>
                     <h2>Edit Profile</h2>
-                    <form id="editProfileForm" class="form-container">
+                    <form id="editProfileFormManager" class="form-container">
                         <div>
                             <label for="firstname">First Name:</label><br>
-                            <input type="text" id="firstname" name="firstname" class="form-input"><br>
+                            <input type="text" id="firstname" name="firstname" class="form-input" required><br>
                             <span id="firstnameError" class="error"></span>
                         </div>
                         <div>
                             <label for="lastname">Last Name:</label><br>
-                            <input type="text" id="lastname" name="lastname" class="form-input"><br>
+                            <input type="text" id="lastname" name="lastname" class="form-input" required><br>
                             <span id="lastnameError" class="error"></span>
                         </div>
                         <div>
                             <label for="email">Email:</label><br>
-                            <input type="email" id="email" name="email" class="form-input"><br>
+                            <input type="email" id="email" name="email" class="form-input" required><br>
                             <span id="emailError" class="error"></span>
                         </div>
                         <div>
                             <label for="password">Password:</label><br>
-                            <input type="password" id="password" name="password" class="form-input"><br>
+                            <input type="password" id="password" name="password" class="form-input" required><br>
                             <span id="passwordError" class="error"></span>
                         </div>
                         <button type="submit" id="updateProfileButton" class="form-submit">Update Profile</button>

@@ -1,72 +1,105 @@
 package com.emp.entities;
 
+import java.util.List;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-	@Entity
-	@Table(name = "projects")
-	public class Project {
-	    @Id
-	    @GeneratedValue(strategy = GenerationType.IDENTITY)
-	    private Long projectId;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.sun.istack.NotNull;
 
-	    private String name;
-	    private String description;
+@Entity
+@Table(name = "projects")
+public class Project {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long projectId;
 
-	    @ManyToOne
-	    @JoinColumn(name = "manager_user_id")
-	    private User manager;
+    private String name;
+    private String description;
 
-		public Project() {
-			super();
-			// TODO Auto-generated constructor stub
-		}
+    @ManyToOne
+    @JoinColumn(name = "manager_user_id")
+    @JsonBackReference(value = "project-manager")
+    private User manager;
 
-		public Project(Long projectId, String name, String description, User manager) {
-			super();
-			this.projectId = projectId;
-			this.name = name;
-			this.description = description;
-			this.manager = manager;
-		}
+    @OneToMany(mappedBy = "project")
+    private List<Assignment> projectAssignments;
 
-		public Long getProjectId() {
-			return projectId;
-		}
+    @OneToMany(mappedBy = "project")
+    private List<RequestResource> projectRequestResources;
 
-		public void setProjectId(Long projectId) {
-			this.projectId = projectId;
-		}
+	public Project() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
-		public String getName() {
-			return name;
-		}
+	public Project(Long projectId, String name, String description, User manager, List<Assignment> projectAssignments,
+			List<RequestResource> projectRequestResources) {
+		super();
+		this.projectId = projectId;
+		this.name = name;
+		this.description = description;
+		this.manager = manager;
+		this.projectAssignments = projectAssignments;
+		this.projectRequestResources = projectRequestResources;
+	}
 
-		public void setName(String name) {
-			this.name = name;
-		}
+	public Long getProjectId() {
+		return projectId;
+	}
 
-		public String getDescription() {
-			return description;
-		}
+	public void setProjectId(Long projectId) {
+		this.projectId = projectId;
+	}
 
-		public void setDescription(String description) {
-			this.description = description;
-		}
+	public String getName() {
+		return name;
+	}
 
-		public User getManager() {
-			return manager;
-		}
+	public void setName(String name) {
+		this.name = name;
+	}
 
-		public void setManager(User manager) {
-			this.manager = manager;
-		}
+	public String getDescription() {
+		return description;
+	}
 
-	    
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public User getManager() {
+		return manager;
+	}
+
+	public void setManager(User manager) {
+		this.manager = manager;
+	}
+
+	public List<Assignment> getProjectAssignments() {
+		return projectAssignments;
+	}
+
+	public void setProjectAssignments(List<Assignment> projectAssignments) {
+		this.projectAssignments = projectAssignments;
+	}
+
+	public List<RequestResource> getProjectRequestResources() {
+		return projectRequestResources;
+	}
+
+	public void setProjectRequestResources(List<RequestResource> projectRequestResources) {
+		this.projectRequestResources = projectRequestResources;
+	}
+
+   
 	}
     
