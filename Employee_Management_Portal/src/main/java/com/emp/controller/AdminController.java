@@ -82,6 +82,28 @@ public class AdminController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/assignProject/{projectId}/{employeeId}")
+    public ResponseEntity<?> assignProject(@PathVariable Long projectId, @PathVariable Long employeeId) {
+        try {
+            adminService.assignProject(projectId, employeeId);
+            return ResponseEntity.ok(true);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/unassignProject/{projectId}/{employeeId}")
+    public ResponseEntity<?> unassignProject(@PathVariable Long projectId, @PathVariable Long employeeId) {
+        try {
+            adminService.unassignProject(projectId, employeeId);
+            return ResponseEntity.ok(true);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/projects")
     public ResponseEntity<List<Project>> getProjects() {
         List<Project> projects = projectRepository.findAll();
@@ -120,6 +142,38 @@ public class AdminController {
                     employeeNames);
         }).collect(Collectors.toList());
         return ResponseEntity.ok(projectDetailsList);
+    }
+    
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/employees/{id}")
+    public ResponseEntity<?> deleteEmployee(@PathVariable Long id) {
+        try {  
+            Optional<User> userOptional = userRepository.findById(id);
+            if (!userOptional.isPresent()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            if (!assignmentRepository.findByEmployeeUserId(id).isEmpty()) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Cannot delete user with active assignments");
+            }
+
+            userRepository.deleteById(id);
+            return ResponseEntity.ok("User deleted successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete user");
+        }
+    }
+
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/updateEmployee/{employeeId}")
+    public ResponseEntity<?> updateEmployee(@PathVariable Long employeeId, @RequestBody UserRequest userRequest) {
+        try {
+            adminService.updateEmployee(employeeId, userRequest);
+            return ResponseEntity.ok("Employee details updated successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
 }

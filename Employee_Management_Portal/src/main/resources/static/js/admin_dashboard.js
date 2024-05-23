@@ -5,12 +5,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const addUserModal = document.getElementById('addUserModal');
     const addUserForm = document.getElementById('addUserForm');
     const projectTableContainer = document.getElementById('projectTableContainer');
-
+    const editUserModal = document.getElementById('editUserModal');
+    const editUserForm = document.getElementById('editUserForm');
+    const assignProjectModal = document.getElementById('assignProjectModal');
+    const assignProjectForm = document.getElementById('assignProjectForm');
+    const manageUsersLink = document.getElementById('manageUsersLink');
+    const manageUsersContainer = document.getElementById('manageUsersContainer');
+    const manageUsersTable = document.getElementById('manageUsersTable');
 
     function hideAllSections() {
         userTableContainer.style.display = 'none';
         projectTableContainer.style.display = 'none';
         addUserModal.style.display = 'none';
+        editUserModal.style.display = 'none';
+        assignProjectModal.style.display = 'none';
+        manageUsersContainer.style.display = 'none';
     }
     
     // VIEW USERS
@@ -241,6 +250,361 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // ASSIGN PROJECT
+    const assignProjectButton = document.getElementById('assignProjectButton');
+
+    if (assignProjectButton && assignProjectModal && assignProjectForm) {
+        assignProjectButton.addEventListener('click', async () => {
+            try {
+                const [projectsResponse, employeesResponse] = await Promise.all([
+                    fetch('/api/admin/projects', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    }),
+                    fetch('/api/admin/employees', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    })
+                ]);
+
+                const projects = await projectsResponse.json();
+                const employees = await employeesResponse.json();
+
+                const projectIdSelect = document.getElementById('projectId');
+                const employeeIdSelect = document.getElementById('employeeId');
+
+                projectIdSelect.innerHTML = projects.map(project => `<option value="${project.projectId}">${project.name}</option>`).join('');
+                employeeIdSelect.innerHTML = employees.map(employee => `<option value="${employee.userId}">${employee.firstname} ${employee.lastname}</option>`).join('');
+
+                assignProjectModal.style.display = 'block';
+            } catch (error) {
+                console.error('Error fetching projects or employees:', error);
+                alert('Failed to load projects or employees');
+            }
+        });
+
+        assignProjectModal.querySelector('.close-btn').addEventListener('click', () => {
+            assignProjectModal.style.display = 'none';
+        });
+
+        assignProjectForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(assignProjectForm);
+            const projectId = formData.get('projectId');
+            const employeeId = formData.get('employeeId');
+
+            try {
+                const response = await fetch(`/api/admin/assignProject/${projectId}/${employeeId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    if (errorText === 'This employee is already assigned to a project.') {
+                        throw new Error(errorText);
+                    } else {
+                        throw new Error('Failed to assign project');
+                    }
+                }
+
+                alert('Project assigned successfully');
+                assignProjectForm.reset();
+                assignProjectModal.style.display = 'none';
+            } catch (error) {
+                if (error.message === 'This employee is already assigned to a project.') {
+                    alert('Error: This employee is already assigned to a project.');
+                } else {
+                    alert(`Error: ${error.message}`);
+                }
+            }
+        });
+    }
+
+    // VIEW PROJECTS
+    const viewProjectsLink = document.getElementById('viewProjectsLink');
+    const projectTableBody = document.querySelector('#projectTable tbody');
+
+    if (viewProjectsLink) {
+        viewProjectsLink.addEventListener('click', async () => {
+            hideAllSections();
+            try {
+                const response = await fetch('/api/admin/projectDetails', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const projectDetails = await response.json();
+                    projectTableBody.innerHTML = '';
+
+                    projectDetails.forEach((project, index) => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${index + 1}</td>
+                            <td>${project.projectName}</td>
+                            <td>${project.managerName}</td>
+                            <td>${project.employeeNames.join(', ')}</td>
+                            <td>
+                                <button class="unassign-btn">Unassign</button>
+                            </td>
+                        `;
+                        projectTableBody.appendChild(row);
+                    });
+
+                    const unassignButtons = document.querySelectorAll('.unassign-btn');
+                    unassignButtons.forEach((button, index) => {
+                        button.addEventListener('click', () => {
+                            const projectId = projectDetails[index].projectId;
+                            const employeeNames = projectDetails[index].employeeNames;
+
+                            if (employeeNames.length === 1) {
+                                unassignEmployee(projectId, employeeNames[0]);
+                            } else {
+                                showUnassignModal(projectId, employeeNames);
+                            }
+                        });
+                    });
+
+                    projectTableContainer.style.display = 'block';
+                } else {
+                    throw new Error('Failed to fetch project details');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert(`Error: ${error.message}`);
+            }
+        });
+    }
+ 
+    //UNASSIGN PROJECT  
+    async function unassignEmployee(projectId, employeeName) {
+        try {
+            const employeeId = await getEmployeeIdFromName(employeeName);
+            console.log('Employee ID:', employeeId);
+            const response = await fetch(`/api/admin/unassignProject/${projectId}/${employeeId}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                alert('Employee unassigned successfully');
+                location.reload(); 
+            } else {
+                throw new Error('Failed to unassign employee');
+            }
+        } catch (error) {
+            console.error('Error unassigning employee:', error);
+            alert(`Error: ${error.message}`);
+        }
+    }
+    
+    async function getEmployeeIdFromName(employeeName) {
+        try {
+            const response = await fetch('/api/admin/employees', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch employees');
+            }
+
+            const employees = await response.json();
+            const employee = employees.find(emp => `${emp.firstname} ${emp.lastname}` === employeeName);
+
+            if (employee) {
+                return employee.userId;
+            } else {
+                throw new Error(`Employee with name "${employeeName}" not found`);
+            }
+        } catch (error) {
+            console.error('Error fetching employees:', error);
+            alert(`Error: ${error.message}`);
+        }
+        
+      
+    }
+    
+    function showUnassignModal(projectId, employeeNames) {
+        const unassignModal = document.getElementById('unassignModal');
+        const employeeSelect = document.getElementById('employeeSelect');
+        const confirmUnassignBtn = document.getElementById('confirmUnassignBtn');
+
+        employeeSelect.innerHTML = employeeNames.map(name => `<option value="${name}">${name}</option>`).join('');
+
+        unassignModal.style.display = 'block';
+
+        const closeBtn = unassignModal.querySelector('.close-btn');
+        closeBtn.addEventListener('click', () => {
+            unassignModal.style.display = 'none';
+        });
+
+        confirmUnassignBtn.addEventListener('click', async () => {
+            const selectedEmployeeName = employeeSelect.value;
+            try {
+                await unassignEmployee(projectId, selectedEmployeeName);
+                unassignModal.style.display = 'none';
+            } catch (error) {
+                console.error('Error unassigning employee:', error);
+                alert(`Error: ${error.message}`);
+            }
+        });
+    }
+
+ // Manage Users
+    if (manageUsersLink) {
+        manageUsersLink.addEventListener('click', async () => {
+            hideAllSections();
+            try {
+                const response = await fetch('/api/admin/users', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch users');
+                }
+
+                const users = await response.json();
+                populateManageUsersTable(users);
+                manageUsersContainer.style.display = 'block';
+            } catch (error) {
+                console.error('Error fetching users:', error);
+                alert('Failed to fetch users');
+            }
+        });
+    }
+
+    function populateManageUsersTable(users) {
+        const tableBody = manageUsersTable.getElementsByTagName('tbody')[0];
+        tableBody.innerHTML = '';
+
+        users.forEach((user, index) => {
+            const row = document.createElement('tr');
+            const serialNumberCell = document.createElement('td');
+            const firstNameCell = document.createElement('td');
+            const lastNameCell = document.createElement('td');
+            const emailCell = document.createElement('td');
+            const roleCell = document.createElement('td');
+            const actionsCell = document.createElement('td');
+
+            serialNumberCell.textContent = index + 1;
+            firstNameCell.textContent = user.firstname;
+            lastNameCell.textContent = user.lastname;
+            emailCell.textContent = user.email;
+            roleCell.textContent = user.role;
+
+            const editButton = document.createElement('button');
+            editButton.textContent = 'Edit';
+            editButton.classList.add('edit-btn'); 
+            editButton.addEventListener('click', () => showEditUserModal(user));
+
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.classList.add('delete-btn'); 
+            deleteButton.addEventListener('click', () => deleteUser(user.userId));
+
+
+            actionsCell.appendChild(editButton);
+            actionsCell.appendChild(deleteButton);
+
+            row.appendChild(serialNumberCell);
+            row.appendChild(firstNameCell);
+            row.appendChild(lastNameCell);
+            row.appendChild(emailCell);
+            row.appendChild(roleCell);
+            row.appendChild(actionsCell);
+
+            tableBody.appendChild(row);
+        });
+    }
+
+    function showEditUserModal(user) {
+        editUserModal.style.display = 'block';
+        document.getElementById('editUserId').value = user.userId;
+        document.getElementById('editFirstname').value = user.firstname;
+        document.getElementById('editLastname').value = user.lastname;
+        document.getElementById('editEmail').value = user.email;
+        document.getElementById('editPassword').value = ''; // Reset the password field
+
+        const closeBtn = editUserModal.querySelector('.close-btn');
+        closeBtn.addEventListener('click', () => {
+            editUserModal.style.display = 'none';
+        });
+
+        editUserForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(editUserForm);
+            const userId = formData.get('editUserId');
+            const firstname = formData.get('editFirstname');
+            const lastname = formData.get('editLastname');
+            const email = formData.get('editEmail');
+            const password = formData.get('editPassword');
+
+            const userPayload = { firstname, lastname, email, password };
+
+            try {
+                const response = await fetch(`/api/admin/updateEmployee/${userId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(userPayload)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to update user');
+                }
+
+                alert('User updated successfully');
+                editUserModal.style.display = 'none';
+                location.reload(); 
+            } catch (error) {
+                console.error('Error updating user:', error);
+                alert(`Error: ${error.message}`);
+            }
+        });
+    }
+    function deleteUser(userId) {
+        if (confirm('Are you sure you want to delete this user?')) {
+            fetch(`/api/admin/employees/${userId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('User deleted successfully');
+                    location.reload(); 
+                } else if (response.status === 409) {
+                    return response.text().then(message => {
+                        alert(message);
+                    });
+                } else {
+                    throw new Error('Failed to delete user');
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting user:', error);
+                alert(`Error: ${error.message}`);
+            });
+        }
+    }
     
     // LOGOUT
     const logoutBtn = document.querySelector('.logout-btn');

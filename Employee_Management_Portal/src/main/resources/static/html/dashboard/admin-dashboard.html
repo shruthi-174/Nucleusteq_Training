@@ -30,7 +30,11 @@
                     <a href="#">View Projects</a>
                 </div>
             </li>
-            
+            <li>
+                <div class="sidebar-item" id="manageUsersLink">
+                    <a href="#">Manage Users</a>
+                </div>
+            </li>
         </ul>
     </div>
     <main class="main-content">
@@ -134,9 +138,88 @@
                 </form>
             </div>
         </div>
- 
+        <div id="assignProjectModal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn">&times;</span>
+                <h2 style="margin-bottom: 20px;">Assign Project</h2>
+                <form id="assignProjectForm" class="form-container">
+                    <label for="projectId">Select Project:</label><br>
+                    <select id="projectId" name="projectId" class="form-input" required>
+                       
+                    </select><br>
+                    <label for="employeeId">Select Employee:</label><br>
+                    <select id="employeeId" name="employeeId" class="form-input" required>
+                       
+                    </select><br>
+                    <button type="submit" id="assignProjectButton" class="form-submit">Assign Project</button>
+                </form>
+            </div>
+        </div>
+        <div id="unassignModal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn">&times;</span>
+                <h2>Unassign Employee</h2>
+                <form id="unassignForm" class="form-container">
+                    <label for="employeeSelect">Select Employee:</label><br>
+                    <select id="employeeSelect" name="employeeSelect" class="form-input" required>
+                    
+                    </select><br>
+                    <button type="submit" id="confirmUnassignBtn" class="form-submit">Unassign</button>
+                </form>
+            </div>
         </div>
         
+        <!-- MANAGE USERS SECTION -->
+        <div id="manageUsersContainer" style="display: none;">
+            <div class="table-header">
+                <h2>MANAGE USERS</h2>
+            </div>
+            <table id="manageUsersTable">
+                <thead>
+                <tr>
+                    <th>S.No</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>John</td>
+                        <td>Doe</td>
+                        <td>john.doe@example.com</td>
+                        <td>Manager</td>
+                        <td>
+                            <button class="delete-btn">Delete</button>
+                            <button class="edit-btn">Edit</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+<div id="editUserModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <h2 style="margin-bottom: 20px;">Edit User</h2>
+        <form id="editUserForm" class="form-container">
+            <input type="hidden" id="editUserId" name="editUserId">
+            <label for="editFirstname">First Name:</label><br>
+            <input type="text" id="editFirstname" name="editFirstname" class="form-input" required><br>
+            <label for="editLastname">Last Name:</label><br>
+            <input type="text" id="editLastname" name="editLastname" class="form-input" required><br>
+            <label for="editEmail">Email:</label><br>
+            <input type="email" id="editEmail" name="editEmail" class="form-input" required><br>
+            <label for="editPassword">Password:</label><br>
+            <input type="password" id="editPassword" name="editPassword" class="form-input" required><br>
+            <button type="submit" id="updateUserButton" class="form-submit">Update User</button>
+        </form>
+    </div>
+</div>
 <script src="/js/admin_dashboard.js"></script>
 </body>
 </html> 
