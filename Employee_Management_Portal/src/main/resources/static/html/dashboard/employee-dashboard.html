@@ -14,31 +14,63 @@
                     <a href="/html/index.html"><img src="/images/logo.png" alt="Company Logo" class="logo"></a>
                 </div>
                 <div class="navbar-menu">
-                    <a href="#" class="logout-btn">Logout</a>
+                    <button id="logoutButton">Logout</button>
                 </div>
             </nav>
         </header>
         <div class="sidebar" id="sidebar">
             <ul class="nav-links">
                 <li>
-                    <div class="sidebar-item" id="editProfileLinkEmployee"> 
+                    <div class="sidebar-item" id="viewProfileLink">
+                        <a href="#">View Profile</a>
+                    </div>
+                </li>
+                <li>
+                    <div class="sidebar-item" id="editProfileLinkEmployee">
                         <a href="#">Edit Profile</a>
+                    </div>
+                </li>
+               <li>
+                    <div class="sidebar-item" id="viewUsersLink">
+                        <a href="#">View Users</a>
                     </div>
                 </li>
             </ul>
         </div>
         <main class="main-content">
-            <h1 style="text-align: center;">Employee Dashboard</h1>
-            <div id="userList">
-                <!-- User list will be populated here -->
+        
+            <!-- VIEW PROFILE SECTION  --> 
+            <section id="projectDetailsSection" style="display: none;">
+                <h2>PROJECT DETAILS</h2>
+                <div id="projectList">
+                   <p>Project Name:</p>
+                   <p>Project Manager: </p>
+                   <p>Team Members:</p>
+                </div>
+            </section>
+            <div id="profileSection" style="display: none;">
+                <div id="skillsList">
+                    <h3>Skills:</h3>
+                    <ul id="skillsContainer">
+                       
+                    </ul>
+                </div>
+                <div id="addSkillForm">
+                    <h3>Add Skill:</h3>
+                    <form id="addSkillFormElement">
+                        <input type="text" id="newSkill" name="newSkill" placeholder="Enter new skill" required style="height: 27px;">
+                        <button type="submit">Add Skill</button>
+                    </form>
+                </div>
             </div>
-            <div id="editProfileModalEmployee" class="modal"> 
+            
+            <!-- EDIT PROFILE SECTION -->
+            <div id="editProfileModalEmployee" class="modal">
                 <div class="modal-content">
-                    <span class="close-btn-employee">&times;</span> 
-                   
+                    <span class="close-btn-employee">×</span>
                     <h2>Edit Profile</h2>
-                    <form id="editProfileFormEmployee" class="form-container"> 
-                     <div>
+                    <form id="editProfileFormEmployee" class="form-container">
+                        <div>
                             <label for="firstname">First Name:</label><br>
                             <input type="text" id="firstname" name="firstname" class="form-input" required><br>
                             <span id="firstnameError" class="error"></span>
@@ -62,7 +94,27 @@
                     </form>
                 </div>
             </div>
+            
+            <!-- VIEW USERS SECTION -->
+             <div id="userList" style="display: none;">
+                <h2>User List</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>S.No.</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
         </main>
+        </main>
+
     </div>
     <script src="/js/employee_dashboard.js"></script>
 </body>

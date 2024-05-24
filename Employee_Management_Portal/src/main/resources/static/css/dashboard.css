@@ -50,14 +50,16 @@ body {
     align-items: center;
 }
 
-.logout-btn {
+#logoutButton {
     background-color: #fff;
     color: #1f33b6;
-    padding: 8px 16px;
+    padding: 10px 11px;
     border-radius: 5px;
     text-decoration: none;
     font-weight: bold;
-    margin-right: 35px;
+    margin-right: 39px;
+    font-size:16px;
+    cursor: pointer;
 }
 
 /* Sidebar */
@@ -155,13 +157,19 @@ body {
     max-width: 500px;
 }
 
-.close-btn {
+.close-btn , #close-btn-employee{
     position: absolute;
     top: 10px;
     right: 10px;
     cursor: pointer;
 }
 
+.close-btn-employee{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+}
 /* Space between Navbar and Sidebar */
 .main-content {
     margin-top: 60px;
@@ -379,6 +387,144 @@ body {
     font-size: 14px;
 }
 
+/*EMPLOYEE DASHBOARD*/
+/* Project Details Section Styling */
+#projectDetailsSection {
+    display: none;
+    margin-top: 20px;
+    margin-left:50px
+}
+
+#projectList {
+    margin-bottom: 20px;
+}
+
+#projectList ul {
+    list-style: none; 
+    padding: 0;
+}
+
+#projectList li {
+    margin-bottom: 5px;
+    padding: 5px;
+}
+/* Make "Project Manager" and "Team Members" bold */
+#projectList h3 {
+    font-weight: bold;
+}
+
+/* View Profile Section Styling */
+#profileSection {
+    display: none;
+    margin-top: 20px;
+    margin-left: 50px;
+}
+#skillsList {
+	margin-top:65px;
+    margin-bottom: 20px;
+}
+
+#skillsContainer {
+    list-style: none; 
+    padding: 0;
+}
+
+#skillsContainer li {
+    margin-bottom: 5px;
+    padding: 5px;
+    list-style-type: disc;
+    margin-left:20px;
+}
+
+#addSkillForm {
+    margin-bottom: 20px;
+    margin-top: -252px;
+    margin-left: 300px;
+}
+
+#addSkillForm button {
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-left:5px;
+}
+
+#addSkillForm button:hover {
+    background-color: #0056b3;
+}
+
+/* View Users Section Styling */
+#userList {
+    display: none;
+    margin-top: 20px;
+        margin-left: 50px;
+
+}
+#userList table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;  
+}
+#userList th, #userList td {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+#userList th {
+    background-color: #3498db;
+    color: white;
+}
+#userList tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+#userList tr:hover {
+    background-color: #ddd;
+}
+#projectList {
+    margin-top: 36px;
+}
+
+/* MANAGER DASHBOARD*/
+.close-btn-manager {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+}
+
+#filterHeading{
+	    margin-bottom: -39px;
+}
+
+#filterOptions {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+    margin-left: 85px;
+}
+
+#filterOptions h2 {
+    margin-right: 10px;
+}
+ #filterOptions {
+     margin-left: 78px;
+}
+ .filter-options {
+     margin-left: 90px;
+}
+
+.skill-label{
+	padding:23px;
+} 
+/* Heading and List Margins */
+#userList, #filterOptions {
+    margin-left: 50px;
+    margin-top: 36px;
+}
+
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .sidebar {
@@ -391,3 +537,6 @@ body {
         margin-left: 0;
     }
 }
+
+
+

@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
@@ -30,9 +31,15 @@ public class User {
     private List<Assignment> employeeAssignments;
 
     @OneToMany(mappedBy = "manager")
+    @JsonIgnoreProperties(value = {"manager", "employee"})
     private List<RequestResource> managerRequestResources;
 
+    @OneToMany(mappedBy = "employee")
+    @JsonIgnoreProperties(value = {"manager", "employee"})
+    private List<RequestResource> employeeRequestResource;
+    
     @ManyToMany(cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("employees") 
     @JoinTable(
         name = "employee_skills",
         joinColumns = @JoinColumn(name = "employee_user_id"),
