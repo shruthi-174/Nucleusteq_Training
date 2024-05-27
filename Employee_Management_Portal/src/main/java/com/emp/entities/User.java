@@ -170,9 +170,6 @@ public class User {
 	public void setSkills(List<Skill> skills) {
 		this.skills = skills;
 	}
-
-
-
 	public enum Role {
         ADMIN,
         EMPLOYEE,

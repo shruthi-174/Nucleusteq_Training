@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
         editUserModal.style.display = 'none';
         assignProjectModal.style.display = 'none';
         manageUsersContainer.style.display = 'none';
-    }
+        requestsTableContainer.style.display = 'none';    }
     
     // VIEW USERS
     const viewUsersLink = document.getElementById('viewUsersLink');
@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const email = formData.get('email');
             const password = formData.get('password');
             const role = formData.get('role');
-
+            
             // Validations
             if (!email.endsWith('@nucleusteq.com')) {
                 alert('Email must end with @nucleusteq.com');
@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('User Payload:', JSON.stringify(userPayload));
 
             try {
-                const response = await fetch('/api/admin/register', {
+                const response = await fetch('/api/admin/add-user', {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -131,7 +131,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 if (!response.ok) {
-                    throw new Error('Failed to add user');
+                    const errorMessage = await response.text();
+                    if (errorMessage === 'Email already exists') {
+                        alert('Email already exists');
+                    } else {
+                        alert(`Error: ${errorMessage}`);
+                    }
+                    return;
                 }
 
                 alert('User added successfully');
@@ -150,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const addProjectButton = document.getElementById('addProjectButton');
     const addProjectModal = document.getElementById('addProjectModal');
     const addProjectForm = document.getElementById('addProjectForm');
-    const managerSelect = document.getElementById('managerId'); // Assuming this is the ID of the manager dropdown
+    const managerSelect = document.getElementById('managerId'); 
 
     if (addProjectButton && addProjectModal && addProjectForm) {
         addProjectButton.addEventListener('click', async () => {
@@ -397,18 +403,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
-            if (response.ok) {
+            if (!response.ok) {
+                const errorText = await response.text();
+                if (errorText === 'Assignment not found.') {
+                    alert('All employees have been unassigned from this project.');
+                    location.reload(); 
+                } else {
+                    throw new Error('Failed to unassign employee');
+                }
+            } else {
                 alert('Employee unassigned successfully');
                 location.reload(); 
-            } else {
-                throw new Error('Failed to unassign employee');
             }
         } catch (error) {
             console.error('Error unassigning employee:', error);
             alert(`Error: ${error.message}`);
         }
     }
-    
     async function getEmployeeIdFromName(employeeName) {
         try {
             const response = await fetch('/api/admin/employees', {
@@ -538,7 +549,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('editFirstname').value = user.firstname;
         document.getElementById('editLastname').value = user.lastname;
         document.getElementById('editEmail').value = user.email;
-        document.getElementById('editPassword').value = ''; // Reset the password field
+        document.getElementById('editPassword').value = ''; 
 
         const closeBtn = editUserModal.querySelector('.close-btn');
         closeBtn.addEventListener('click', () => {
@@ -581,7 +592,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     function deleteUser(userId) {
         if (confirm('Are you sure you want to delete this user?')) {
-            fetch(`/api/admin/employees/${userId}`, {
+            fetch(`/api/admin/deleteEmployees/${userId}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -606,12 +617,140 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // LOGOUT
-    const logoutBtn = document.querySelector('.logout-btn');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', function(event) {
-            event.preventDefault();
-            window.location.href = '/html/index.html';
+    // VIEW REQUESTS
+    const viewRequestsLink = document.getElementById('viewRequestsLink');
+    const requestsTableContainer = document.getElementById('requestsTableContainer');
+    const requestsTable = document.getElementById('requestsTable');
+    
+    if (viewRequestsLink) {
+        viewRequestsLink.addEventListener('click', async () => {
+            hideAllSections();
+            try {
+                const response = await fetch('/api/admin/requests', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch resource requests');
+                }
+
+                const requests = await response.json();
+                populateRequestsTable(requests);
+                requestsTableContainer.style.display = 'block';
+            } catch (error) {
+                console.error('Error fetching resource requests:', error);
+                alert('Failed to fetch resource requests');
+            }
         });
+    }
+
+    function populateRequestsTable(requests) {
+        const tableBody = requestsTable.getElementsByTagName('tbody')[0];
+        tableBody.innerHTML = '';
+
+        requests.forEach((request, index) => {
+            const row = document.createElement('tr');
+            const serialNumberCell = document.createElement('td');
+            const projectNameCell = document.createElement('td');
+            const employeeEmailsCell = document.createElement('td');
+            const statusCell = document.createElement('td');
+            const actionsCell = document.createElement('td');
+
+            serialNumberCell.textContent = index + 1;
+            projectNameCell.textContent = request.project.name;
+            employeeEmailsCell.textContent = request.employee.email;
+            statusCell.textContent = request.status;
+
+            const approveButton = document.createElement('button');
+            approveButton.textContent = 'Approve';
+            approveButton.classList.add('approve-btn');
+            approveButton.addEventListener('click', () => approveRequest(request.requestId));
+
+            const rejectButton = document.createElement('button');
+            rejectButton.textContent = 'Reject';
+            rejectButton.classList.add('reject-btn');
+            rejectButton.addEventListener('click', () => rejectRequest(request.requestId));
+
+            actionsCell.appendChild(approveButton);
+            actionsCell.appendChild(rejectButton);
+
+            row.appendChild(serialNumberCell);
+            row.appendChild(projectNameCell);
+            row.appendChild(employeeEmailsCell);
+            row.appendChild(statusCell);
+            row.appendChild(actionsCell);
+
+            tableBody.appendChild(row);
+        });
+    }
+
+    async function approveRequest(requestId) {
+        try {
+            const response = await fetch(`/api/admin/requests/${requestId}/approve`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to approve request');
+            }
+
+            alert('Request approved successfully');
+            location.reload(); 
+        } catch (error) {
+            console.error('Error approving request:', error);
+            alert(`Error: ${error.message}`);
+        }
+    }
+
+    async function rejectRequest(requestId) {
+        try {
+            const response = await fetch(`/api/admin/requests/${requestId}/reject`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to reject request');
+            }
+
+            alert('Request rejected successfully');
+            location.reload(); 
+        } catch (error) {
+            console.error('Error rejecting request:', error);
+            alert(`Error: ${error.message}`);
+        }
+    }
+
+   
+    
+    // LOGOUT
+    const logoutButton = document.getElementById('logoutButton');
+    logoutButton.addEventListener('click', logout);
+
+    function logout() {
+      fetch('/api/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => {
+        if (response.ok) {
+          console.log('Logged out successfully');
+          window.location.href = '/html/index.html';
+        } else {
+          console.error('Failed to log out');
+        }
+      })
+      .catch(error => {
+        console.error('Error occurred while logging out:', error);
+      });
     }
 });

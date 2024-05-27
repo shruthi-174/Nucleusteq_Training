@@ -1,7 +1,5 @@
 package com.emp.entities;
 
-import java.util.List;
-
 import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

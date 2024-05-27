@@ -9,9 +9,12 @@ import org.springframework.stereotype.Service;
 import com.emp.dto.UserRequest;
 import com.emp.entities.Assignment;
 import com.emp.entities.Project;
+import com.emp.entities.RequestResource;
+import com.emp.entities.RequestResource.RequestStatus;
 import com.emp.entities.User;
 import com.emp.repository.AssignmentRepository;
 import com.emp.repository.ProjectRepository;
+import com.emp.repository.RequestResourceRepository;
 import com.emp.repository.UserRepository;
 
 @Service
@@ -28,10 +31,14 @@ public class AdminService {
 
     @Autowired
     private AssignmentRepository assignmentRepository;
+    
+    @Autowired
+    private  RequestResourceRepository requestResourceRepository;
 
-    public boolean registerUser(UserRequest userRequest) {
-        if (userRepository.findByEmail(userRequest.getEmail()) != null) {
-            throw new IllegalArgumentException("Email already exists");
+    
+    public void registerUser(UserRequest userRequest) throws Exception {
+        if (userRepository.findByEmail(userRequest.getEmail()).isPresent()) {
+            throw new Exception("Email is already registered");
         }
 
         User user = new User();
@@ -39,11 +46,8 @@ public class AdminService {
         user.setLastname(userRequest.getLastname());
         user.setEmail(userRequest.getEmail());
         user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
-        user.setRole(User.Role.valueOf(userRequest.getRole()));
-
+        user.setRole(User.Role.valueOf(userRequest.getRole().toUpperCase()));
         userRepository.save(user);
-
-        return true;
     }
 
     public boolean createProject(String name, String description, Long managerId) {
@@ -80,10 +84,15 @@ public class AdminService {
 
     public void unassignProject(Long projectId, Long employeeId) {
         Assignment assignment = assignmentRepository.findByProjectProjectIdAndEmployeeUserId(projectId, employeeId)
-                .orElseThrow(() -> new IllegalArgumentException("Assignment not found."));
+                .orElse(null);
+
+        if (assignment == null) {
+            throw new IllegalArgumentException("Assignment not found.");
+        }
 
         assignmentRepository.delete(assignment);
     }
+    
     public void deleteEmployee(Long employeeId) {
         User employee = userRepository.findByUserIdAndRole(employeeId, User.Role.EMPLOYEE)
                 .orElseThrow(() -> new IllegalArgumentException("Employee not found."));
@@ -101,6 +110,23 @@ public class AdminService {
         userRepository.save(employee);
     }
 
+    public RequestResource approveResourceRequest(Long requestId) {
+        RequestResource request = requestResourceRepository.findById(requestId)
+                .orElseThrow(() -> new IllegalArgumentException("Request not found"));
 
+        request.setStatus(RequestStatus.APPROVED);
+        return requestResourceRepository.save(request);
+    }
+
+    public RequestResource rejectResourceRequest(Long requestId) {
+        RequestResource request = requestResourceRepository.findById(requestId)
+                .orElseThrow(() -> new IllegalArgumentException("Request not found"));
+
+        request.setStatus(RequestStatus.REJECTED);
+        return requestResourceRepository.save(request);
+    }
+    public List<RequestResource> getAllResourceRequests() {
+        return requestResourceRepository.findAll();
+    }
 
 }

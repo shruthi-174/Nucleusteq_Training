@@ -1,8 +1,6 @@
 package com.emp.entities;
 
 import java.util.List;
-
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -14,29 +12,28 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.sun.istack.NotNull;
 
 @Entity
 @Table(name = "projects")
 public class Project {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long projectId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long projectId;
 
-	private String name;
-	private String description;
+    private String name;
+    private String description;
 
-	@ManyToOne
-	@JoinColumn(name = "manager_user_id")
-	@JsonBackReference(value = "project-manager")
-	private User manager;
+    @ManyToOne
+    @JoinColumn(name = "manager_user_id")
+    @JsonBackReference(value = "project-manager")
+    private User manager;
 
-	@OneToMany(mappedBy = "project")
-	private List<Assignment> projectAssignments;
+    @OneToMany(mappedBy = "project")
+    private List<Assignment> projectAssignments;
 
-	@OneToMany(mappedBy = "project")
-	@JsonIgnoreProperties(value = { "manager", "employee" })
-	private List<RequestResource> projectRequestResources;
+    @OneToMany(mappedBy = "project")
+    @JsonIgnoreProperties(value = {"manager", "employee"})
+    private List<RequestResource> projectRequestResources;
 
 	public Project() {
 		super();
@@ -102,4 +99,6 @@ public class Project {
 		this.projectRequestResources = projectRequestResources;
 	}
 
-}
+   
+	}
+    

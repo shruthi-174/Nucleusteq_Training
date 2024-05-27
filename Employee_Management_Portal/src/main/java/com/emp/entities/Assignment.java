@@ -1,7 +1,5 @@
 package com.emp.entities;
 
-import java.util.List;
-
 import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -9,20 +7,20 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 @Entity
 @Table(name = "assignments")
 public class Assignment {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 
-	private Long assignmentId;
+    private Long assignmentId;
 
-	@OneToOne
-	@JoinColumn(name = "employee_user_id")
-	@JsonBackReference(value = "assignment-employee")
-	private User employee;
+    @OneToOne
+    @JoinColumn(name = "employee_user_id")
+    @JsonBackReference(value = "assignment-employee")
+    private User employee;
 
-	@ManyToOne
-	@JoinColumn(name = "project_id")
-	@JsonBackReference(value = "assignment-project")
-	private Project project;
+    @ManyToOne
+    @JoinColumn(name = "project_id")
+    @JsonBackReference(value = "assignment-project")
+    private Project project;
 
 	public Assignment() {
 		super();
@@ -59,5 +57,7 @@ public class Assignment {
 	public void setProject(Project project) {
 		this.project = project;
 	}
-
+    
+    
+	
 }

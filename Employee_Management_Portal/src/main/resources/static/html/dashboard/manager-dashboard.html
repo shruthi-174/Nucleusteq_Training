@@ -14,7 +14,7 @@
                     <a href="/html/index.html"><img src="/images/logo.png" alt="Company Logo" class="logo"></a>
                 </div>
                 <div class="navbar-menu">
-                    <a href="#" class="logout-btn">Logout</a>
+                   <button id="logoutButton">Logout</button>
                 </div>
             </nav>
         </header>
@@ -25,44 +25,134 @@
                         <a href="#">Edit Profile</a>
                     </div>
                 </li>
-            </ul>
+                <li>
+                    <div class="sidebar-item" id="viewUsersLink">
+                        <a href="#">View Users</a>
+                    </div>
+                </li>
+                 <li>
+	                <div class="sidebar-item" id="viewProjectsLink">
+	                    <a href="#">View Projects</a>
+	                </div>
+	            </li>
+	            </ul>
         </div>
-        <main class="main-content">
-            <h1 style="text-align: center;">Manager Dashboard</h1>
-            <div id="userList">
-                <!-- User list will be populated here -->
-            </div>
-            <div id="editProfileModalManager" class="modal">
-                <div class="modal-content">
-                    <span class="close-btn-manager">&times;</span>
-                    <h2>Edit Profile</h2>
-                    <form id="editProfileFormManager" class="form-container">
-                        <div>
-                            <label for="firstname">First Name:</label><br>
-                            <input type="text" id="firstname" name="firstname" class="form-input" required><br>
-                            <span id="firstnameError" class="error"></span>
-                        </div>
-                        <div>
-                            <label for="lastname">Last Name:</label><br>
-                            <input type="text" id="lastname" name="lastname" class="form-input" required><br>
-                            <span id="lastnameError" class="error"></span>
-                        </div>
-                        <div>
-                            <label for="email">Email:</label><br>
-                            <input type="email" id="email" name="email" class="form-input" required><br>
-                            <span id="emailError" class="error"></span>
-                        </div>
-                        <div>
-                            <label for="password">Password:</label><br>
-                            <input type="password" id="password" name="password" class="form-input" required><br>
-                            <span id="passwordError" class="error"></span>
-                        </div>
-                        <button type="submit" id="updateProfileButton" class="form-submit">Update Profile</button>
-                    </form>
-                </div>
-            </div>
-        </main>
-    </div>
+		<main class="main-content">	
+		  		          
+		          <!-- VIEW USERS SECTION -->
+		            <div id="filterOptions" style="display: none;">
+					    <div id="filterHeading"><h3>Filter By</h3></div>
+					    <div class="filter-options">
+					    <label>
+					    	<input type="checkbox" id="showAllUsers"> Default
+						</label>
+					        <label class="skill-label">
+					            <input type="checkbox" id="filterBySkills"> Employee by Skills
+					        	
+					        </label>
+					        <label>
+					            <input type="checkbox" id="filterByUnassigned"> Unassigned Employees
+					        </label>
+					        <button id="createRequestButton" class="createReq">Create Request</button>
+					    </div>
+					</div>
+					
+					<!-- USER LIST TABLLE -->
+		            <div id="userList" style="display: none;">
+		                <h2>User List:</h2>
+		                <table id="userTable">
+		                    <thead>
+		                        <tr>
+		                            <th>S.No.</th>
+		                            <th>First Name</th>
+		                            <th>Last Name</th>
+		                            <th>Email</th>
+		                            <th>Role</th>
+		                        </tr>
+		                    </thead>
+		                    <tbody>
+		                    </tbody>
+		                </table>
+		            </div>
+		            
+		            <!-- CREATE REQUEST FORM -->
+		            <div id="createRequestModal" class="modal" style="display: none;">
+					    <div class="modal-content">
+					        <span class="close-btn-request">&times;</span>
+					        <h2>Create Request</h2>
+					        <form id="createRequestForm" class="form-container">
+					            <div>
+					                <label for="projectName">Project Name:</label><br>
+					                <select id="projectName" name="projectName" class="form-input" required></select>
+					            </div>
+					            <div>
+					                <label>Employee Emails:</label><br>
+					                <div id="employeeEmailsContainer">
+					                    <input type="email" class="form-input employee-email" placeholder="Enter an email" required>
+					                </div>
+					                <button type="button" id="addEmailBtn">Add Email</button>
+					            </div>
+					            <div>
+								    <label for="managerId">Manager ID:</label><br>
+								    <input type="text" id="managerId" name="managerId" class="form-input" readonly>
+								</div>
+					            <div>
+					                <label for="status">Status:</label><br>
+					                <input type="text" id="status" name="status" class="form-input" value="PENDING" readonly>
+					            </div>
+					            <button type="submit" id="createRequestButton" class="form-submit">Submit</button>
+					        </form>
+					    </div>
+					</div>
+		            
+		            <!-- EDIT PROFILE SECTION -->
+					<div id="editProfileModalManager" class="modal">
+					    <div class="modal-content">
+					        <span class="close-btn-manager">&times;</span>
+					        <h2>Edit Profile</h2>
+					        <form id="editProfileFormManager" class="form-container">
+					            <div>
+					                <label for="firstname">First Name:</label><br>
+					                <input type="text" id="firstname" name="firstname" class="form-input" required>
+					                <span id="firstnameError" class="error"></span>
+					            </div>
+					            <div>
+					                <label for="lastname">Last Name:</label><br>
+					                <input type="text" id="lastname" name="lastname" class="form-input" required>
+					                <span id="lastnameError" class="error"></span>
+					            </div>
+					            <div>
+					                <label for="email">Email:</label><br>
+					                <input type="email" id="email" name="email" class="form-input" required>
+					                <span id="emailError" class="error"></span>
+					            </div>
+					            <div>
+					                <label for="password">Password:</label><br>
+					                <input type="password" id="password" name="password" class="form-input" required>
+					                <span id="passwordError" class="error"></span>
+					            </div>
+					            <button type="submit" id="updateProfileButton" class="form-submit">Update Profile</button>
+					        </form>
+					    </div>
+					</div>
+		            
+          		    <!-- VIEW PROJECT SECTION -->
+			        <div id="projectList" style="display: none;" class="mgrprojectList">
+			                <h2>Project List:</h2>
+			                <table id="projectTable">
+			                    <thead>
+			                        <tr>
+			                            <th>S.No.</th>
+			                            <th>Project Name</th>
+			                            <th>Project Description</th>
+			                        </tr>
+			                    </thead>
+			                    <tbody>
+			                    </tbody>
+			                </table>
+			            </div>
+        		</main>
+    		</div>
     <script src="/js/manager_dashboard.js"></script>
 </body>
 </html>

@@ -1,3 +1,4 @@
+//LOGIN
 const loginForm = document.getElementById('loginForm');
 
 loginForm.addEventListener('submit', async (e) => {
@@ -6,7 +7,7 @@ loginForm.addEventListener('submit', async (e) => {
   const email = document.getElementById('email').value;
   const password = document.getElementById('password').value;
   try {
-    const response = await fetch('/authenticate', {
+    const response = await fetch('/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

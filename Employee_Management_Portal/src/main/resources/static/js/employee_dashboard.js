@@ -83,8 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (response.ok) {
                     const skills = await response.json();
                     const skillsContainer = document.getElementById('skillsContainer');
-                    skillsContainer.innerHTML = ''; // Clear existing skills
-
+                    skillsContainer.innerHTML = ''; 
                     skills.filter(skill => typeof skill === 'string').forEach(skill => {
                         const skillItem = document.createElement('li');
                         skillItem.textContent = skill;

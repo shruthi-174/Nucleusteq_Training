@@ -1,6 +1,5 @@
 package com.emp.config;
 
-import com.emp.config.JwtFilter;
 import com.emp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -41,14 +40,16 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
             .authorizeRequests()
-            .antMatchers("/authenticate", "/html/**", "/css/**", "/js/**", "/images/**").permitAll()
+            .antMatchers("/favicon.ico").permitAll()
+            .antMatchers("/login","/register", "/html/**", "/css/**", "/js/**", "/images/**").permitAll()
             .antMatchers("/api/admin/**").hasRole("ADMIN")
             .antMatchers("/api/manager/**").hasRole("MANAGER")
             .antMatchers("/api/employee/**").hasRole("EMPLOYEE")
+            .antMatchers("/api/logout").permitAll()
             .anyRequest().authenticated()
             .and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class); 
     }
 
     @Bean

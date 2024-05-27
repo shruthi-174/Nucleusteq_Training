@@ -36,8 +36,8 @@ body {
     padding: 10px 20px;
     position: fixed;
     width: 100%;
-    top: 0;
     z-index: 2;
+    top: 0;
 }
 
 .navbar-logo img {
@@ -157,7 +157,7 @@ body {
     max-width: 500px;
 }
 
-.close-btn , #close-btn-employee{
+.close-btn , #close-btn-employee, .close-btn-request{
     position: absolute;
     top: 10px;
     right: 10px;
@@ -257,7 +257,7 @@ body {
     margin-left: 40px;
 }
 
-.create-user-btn, .create-project-btn {
+.create-user-btn, .create-project-btn{
     background-color: #3498db;
     color: white;
     border: none;
@@ -387,6 +387,54 @@ body {
     font-size: 14px;
 }
 
+/* Request Table */
+#requestsTableContainer {
+    text-align: center;
+}
+
+/* Request Table */
+#requestsTable {
+    margin: 0 auto;
+    width: 80%;
+    border-collapse: collapse;
+    background-color: white;
+}
+
+#requestsTable th, #requestsTable td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+#requestsTable th {
+    background-color: #3498db;
+    color: white;
+}
+
+#requestsTable tr:hover {
+    background-color: #f1f1f1;
+}
+
+#requestsTable td .approve-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+#requestsTable td .reject-btn {
+    background-color: #ff6347;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+
 /*EMPLOYEE DASHBOARD*/
 /* Project Details Section Styling */
 #projectDetailsSection {
@@ -437,9 +485,7 @@ body {
 }
 
 #addSkillForm {
-    margin-bottom: 20px;
-    margin-top: -252px;
-    margin-left: 300px;
+   margin-top: 29px;
 }
 
 #addSkillForm button {
@@ -483,7 +529,8 @@ body {
     background-color: #ddd;
 }
 #projectList {
-    margin-top: 36px;
+    margin-top: 20px;
+    margin-bottom: -13px;
 }
 
 /* MANAGER DASHBOARD*/
@@ -495,7 +542,7 @@ body {
 }
 
 #filterHeading{
-	    margin-bottom: -39px;
+    margin-bottom: -48px;
 }
 
 #filterOptions {
@@ -523,8 +570,31 @@ body {
     margin-left: 50px;
     margin-top: 36px;
 }
+.createReq{
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+    margin-left:400px;
+}
 
+#addEmailBtn{
+	 background-color: #007bff;
+       color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+     margin-bottom: 13px;
 
+}
+
+.mgrprojectList{
+	margin-left:50px;
+}
 /* Responsive Design */
 @media (max-width: 768px) {
     .sidebar {

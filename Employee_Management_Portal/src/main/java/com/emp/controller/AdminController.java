@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.emp.dto.ProjectDetails;
 import com.emp.dto.UserRequest;
 import com.emp.entities.Project;
+import com.emp.entities.RequestResource;
 import com.emp.entities.User;
 import com.emp.repository.AssignmentRepository;
 import com.emp.repository.ProjectRepository;
@@ -42,25 +42,17 @@ public class AdminController {
     
     @Autowired
     private AssignmentRepository assignmentRepository;
-    
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody UserRequest userRequest) {
+    @PostMapping("/add-user")
+    public ResponseEntity<?> registerUser(@RequestBody UserRequest userRequest) {
         try {
-            boolean registered = adminService.registerUser(userRequest);
-            if (registered) {
-                return ResponseEntity.ok("User registered successfully");
-            } else {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to register user");
-            }
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            adminService.registerUser(userRequest);
+            return ResponseEntity.ok("User registered successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/createProject")
     public ResponseEntity<?> addProject(@RequestBody Project project) {
@@ -145,7 +137,7 @@ public class AdminController {
     }
     
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/employees/{id}")
+    @DeleteMapping("/deleteEmployees/{id}")
     public ResponseEntity<?> deleteEmployee(@PathVariable Long id) {
         try {  
             Optional<User> userOptional = userRepository.findById(id);
@@ -164,7 +156,6 @@ public class AdminController {
         }
     }
 
-
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/updateEmployee/{employeeId}")
     public ResponseEntity<?> updateEmployee(@PathVariable Long employeeId, @RequestBody UserRequest userRequest) {
@@ -173,6 +164,35 @@ public class AdminController {
             return ResponseEntity.ok("Employee details updated successfully");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+    
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/requests")
+    public ResponseEntity<List<RequestResource>> getAllResourceRequests() {
+        List<RequestResource> requests = adminService.getAllResourceRequests();
+        return ResponseEntity.ok(requests);
+    }
+    
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/requests/{requestId}/approve")
+    public ResponseEntity<RequestResource> approveResourceRequest(@PathVariable Long requestId) {
+        try {
+            RequestResource approvedRequest = adminService.approveResourceRequest(requestId);
+            return ResponseEntity.ok(approvedRequest);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/requests/{requestId}/reject")
+    public ResponseEntity<RequestResource> rejectResourceRequest(@PathVariable Long requestId) {
+        try {
+            RequestResource rejectedRequest = adminService.rejectResourceRequest(requestId);
+            return ResponseEntity.ok(rejectedRequest);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 

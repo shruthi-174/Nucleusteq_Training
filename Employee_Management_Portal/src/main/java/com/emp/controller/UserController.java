@@ -1,5 +1,7 @@
 package com.emp.controller;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +34,7 @@ public class UserController {
     @Autowired
     private JwtUtil jwtUtil;
 
-    @PostMapping("/authenticate")
+    @PostMapping("/login")
     public ResponseEntity<?> authenticate(@RequestBody UserRequest userRequest) {
         try {
             authenticationManager.authenticate(
@@ -45,15 +47,9 @@ public class UserController {
         final UserDetails userDetails = userService.loadUserByUsername(userRequest.getEmail());
         final String jwt = jwtUtil.generateToken(userDetails);
 
-        return ResponseEntity.ok(jwt); // Return JWT token
+        return ResponseEntity.ok(jwt); 
     }
 
-//    @GetMapping("/api/users/{userId}")
-//    public ResponseEntity<?> getUser(@PathVariable Long userId) {
-//        User user = userRepository.findByUserId(userId)
-//                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
-//        return ResponseEntity.ok(user);
-//    }
     
     @GetMapping("/api/users/role")
     public ResponseEntity<?> getUserRole() {
@@ -69,10 +65,22 @@ public class UserController {
     public ResponseEntity<?> getUserByEmail() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userEmail = authentication.getName();
-        User user = userRepository.findByEmail(userEmail);
-        if (user == null) {
+        Optional<User> optionalUser = userRepository.findByEmail(userEmail);
+        if (!optionalUser.isPresent()) {
             throw new IllegalArgumentException("User not found with email: " + userEmail);
         }
+        User user = optionalUser.get();
         return ResponseEntity.ok(user);
     }
+    
+    @PostMapping("/api/logout")
+    public ResponseEntity<?> logout() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            authentication.setAuthenticated(false);
+            SecurityContextHolder.getContext().setAuthentication(null);
+        }
+        return ResponseEntity.ok("Successfully logged out");
+    }
+
 }

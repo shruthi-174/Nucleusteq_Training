@@ -14,7 +14,7 @@
                 <a href="/html/index.html"><img src="/images/logo.png" alt="Company Logo" class="logo"></a>
             </div>
             <div class="navbar-menu">
-                <a href="#" class="logout-btn">Logout</a>
+               <button id="logoutButton">Logout</button>
             </div>
         </nav>
     </header>
@@ -35,6 +35,11 @@
                     <a href="#">Manage Users</a>
                 </div>
             </li>
+                    <li>
+            <div class="sidebar-item" id="viewRequestsLink">
+                <a href="#">View Requests</a>
+            </div>
+        </li>
         </ul>
     </div>
     <main class="main-content">
@@ -80,8 +85,8 @@
                     <span id="passwordError" class="error"></span>
                     <label for="role">Role:</label><br>
                     <select id="role" name="role" class="form-input" required>
-                        <option value="EMPLOYEE">Employee</option>
-                        <option value="MANAGER">Manager</option>
+                    	<option value="EMPLOYEE">Employee</option>
+                     	<option value="MANAGER">Manager</option>
                     </select><br>
                     <button type="submit" id="addUserButton" class="form-submit">Add User</button>
                 </form>
@@ -132,9 +137,9 @@
                     <textarea id="projectDescription" name="projectDescription" class="form-input" rows="4" required></textarea><br>
                     <span id="projectDescriptionError" class="error"></span>
                     <label for="managerId">Manager:</label><br>
-<select id="managerId" name="managerId" class="form-input" required></select><br>
- <span id="managerIdError" class="error"></span>
-                    <button type="submit" id="addProjectButton" class="form-submit">Add Project</button>
+						<select id="managerId" name="managerId" class="form-input" required></select><br>
+						 <span id="managerIdError" class="error"></span>
+						 <button type="submit" id="addProjectButton" class="form-submit">Add Project</button>
                 </form>
             </div>
         </div>
@@ -200,25 +205,46 @@
                 </tbody>
             </table>
         </div>
+        
+       	 <div id="editUserModal" class="modal" style="display: none;">
+    		<div class="modal-content">
+		        <span class="close-btn">&times;</span>
+		        <h2 style="margin-bottom: 20px;">Edit User</h2>
+		        <form id="editUserForm" class="form-container">
+		            <input type="hidden" id="editUserId" name="editUserId">
+		            <label for="editFirstname">First Name:</label><br>
+		            <input type="text" id="editFirstname" name="editFirstname" class="form-input" required><br>
+		            <label for="editLastname">Last Name:</label><br>
+		            <input type="text" id="editLastname" name="editLastname" class="form-input" required><br>
+		            <label for="editEmail">Email:</label><br>
+		            <input type="email" id="editEmail" name="editEmail" class="form-input" required><br>
+		            <label for="editPassword">Password:</label><br>
+		            <input type="password" id="editPassword" name="editPassword" class="form-input" required><br>
+		            <button type="submit" id="updateUserButton" class="form-submit">Update User</button>
+		        </form>
+   		 	</div>
+		</div>
+		
+  		<!-- VIEW REQUESTS SECTION -->
+	    <div id="requestsTableContainer" style="display: none;">
+	        <div class="table-header">
+	            <h2>RESOURCE REQUESTS</h2>
+	        </div>
+	        <table id="requestsTable">
+	            <thead>
+	                <tr>
+	                    <th>S.No</th>
+	                    <th>Project Name</th>
+	                    <th>Employee Emails</th>
+	                    <th>Status</th>
+	                    <th>Actions</th>
+	                </tr>
+	            </thead>
+	            <tbody>
+	            </tbody>
+	        </table>
+	    </div>
     </main>
-</div>
-<div id="editUserModal" class="modal" style="display: none;">
-    <div class="modal-content">
-        <span class="close-btn">&times;</span>
-        <h2 style="margin-bottom: 20px;">Edit User</h2>
-        <form id="editUserForm" class="form-container">
-            <input type="hidden" id="editUserId" name="editUserId">
-            <label for="editFirstname">First Name:</label><br>
-            <input type="text" id="editFirstname" name="editFirstname" class="form-input" required><br>
-            <label for="editLastname">Last Name:</label><br>
-            <input type="text" id="editLastname" name="editLastname" class="form-input" required><br>
-            <label for="editEmail">Email:</label><br>
-            <input type="email" id="editEmail" name="editEmail" class="form-input" required><br>
-            <label for="editPassword">Password:</label><br>
-            <input type="password" id="editPassword" name="editPassword" class="form-input" required><br>
-            <button type="submit" id="updateUserButton" class="form-submit">Update User</button>
-        </form>
-    </div>
 </div>
 <script src="/js/admin_dashboard.js"></script>
 </body>
