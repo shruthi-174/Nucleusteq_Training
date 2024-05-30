@@ -46,8 +46,6 @@ public class ManagerService {
     @Autowired
     private RequestResourceRepository requestResourceRepository;
     
-    @Autowired
-    private RequestResourceRequest requestResourceRequest;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -128,5 +126,33 @@ public class ManagerService {
         }
 
         return requestResources;
+    }
+    
+    public List<Project> getAllProjects() {
+    	if (projectRepository == null) {
+            throw new IllegalStateException("Project not found.");
+        }
+        return projectRepository.findAll();
+       }
+    
+    
+    public List<User> getAllEmployees() {
+        if (userRepository == null) {
+            throw new IllegalStateException("Employee not found.");
+        }
+        return userRepository.findByRole(User.Role.EMPLOYEE);
+    }
+    
+
+    public List<User> getAllManagers() {
+    	 if (userRepository == null) {
+             throw new IllegalStateException("Manager not found.");
+         }
+         return userRepository.findByRole(User.Role.MANAGER);
+        }
+
+
+    public List<EmployeeSkill> getAllEmployeeSkills() {
+        return employeeSkillRepository.findAll();
     }
 }

@@ -14,7 +14,6 @@ public class Skill {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long skillId;
     private String name;
-
     
     @ManyToMany(mappedBy = "skills", cascade = CascadeType.ALL)
     @JsonIgnoreProperties("skills")
@@ -25,11 +24,10 @@ public class Skill {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Skill(Long skillId, String name, List<RequestResource> skillRequestResources, List<User> employees) {
+	public Skill(Long skillId, String name) {
 		super();
 		this.skillId = skillId;
 		this.name = name;
-		this.employees = employees;
 	}
 
 	public Long getSkillId() {

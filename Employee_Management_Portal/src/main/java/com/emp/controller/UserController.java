@@ -49,7 +49,6 @@ public class UserController {
 
         return ResponseEntity.ok(jwt); 
     }
-
     
     @GetMapping("/api/users/role")
     public ResponseEntity<?> getUserRole() {

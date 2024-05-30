@@ -1,8 +1,6 @@
 package com.emp.controller;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,13 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.emp.dto.ProjectDetails;
+import com.emp.dto.ProjectRequest;
 import com.emp.dto.UserRequest;
 import com.emp.entities.Project;
 import com.emp.entities.RequestResource;
 import com.emp.entities.User;
-import com.emp.repository.AssignmentRepository;
-import com.emp.repository.ProjectRepository;
-import com.emp.repository.UserRepository;
 import com.emp.service.AdminService;
 
 @RestController
@@ -33,15 +29,6 @@ public class AdminController {
 
     @Autowired
     private AdminService adminService;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private ProjectRepository projectRepository;
-    
-    @Autowired
-    private AssignmentRepository assignmentRepository;
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/add-user")
@@ -53,26 +40,19 @@ public class AdminController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/createProject")
-    public ResponseEntity<?> addProject(@RequestBody Project project) {
+    public ResponseEntity<?> addProject(@RequestBody ProjectRequest projectRequest) {
         try {
-            if (project.getManager() == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Manager cannot be null");
-            }
-
-            Long managerId = project.getManager().getUserId();
-            User manager = userRepository.findByUserIdAndRole(managerId, User.Role.MANAGER)
-                    .orElseThrow(() -> new IllegalArgumentException("This ID does not belong to a manager."));
-
-            project.setManager(manager);
-            projectRepository.save(project);
-            return ResponseEntity.ok(true);
+        	adminService.createProject(projectRequest);
+        	return ResponseEntity.ok(true);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
-
+    
+    
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/assignProject/{projectId}/{employeeId}")
     public ResponseEntity<?> assignProject(@PathVariable Long projectId, @PathVariable Long employeeId) {
@@ -97,62 +77,62 @@ public class AdminController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/projects")
-    public ResponseEntity<List<Project>> getProjects() {
-        List<Project> projects = projectRepository.findAll();
-        return ResponseEntity.ok(projects);
+    public ResponseEntity<?> getProjects() {
+    	try {
+            List<Project> projects = adminService.getAllProjects();
+            return ResponseEntity.ok(projects);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+        }
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/employees")
-    public ResponseEntity<List<User>> getEmployees() {
-        List<User> employees = userRepository.findByRole(User.Role.EMPLOYEE);
-        return ResponseEntity.ok(employees);
-    }
+    public ResponseEntity<?> getEmployees() {
+    	try {
+            List<User> employees = adminService.getAllEmployees();
+            return ResponseEntity.ok(employees);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+        }
+   }
+    
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/managers")
-    public ResponseEntity<List<User>> getManagers() {
-        List<User> managers = userRepository.findByRole(User.Role.MANAGER);
-        return ResponseEntity.ok(managers);
-    }
+    public ResponseEntity<?> getManagers() {
+    	try {
+            List<User> managers = adminService.getAllManagers();
+            return ResponseEntity.ok(managers);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+        }
+    	}
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/users")
-    public ResponseEntity<List<User>> getUsers() {
-        List<User> users = userRepository.findAll();
-        return ResponseEntity.ok(users);
+    public ResponseEntity<?> getUsers() {
+    	try {
+    	 List<User> users=adminService.getAllUsers();
+    	 return ResponseEntity.ok(users);
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+    }
     }
     
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/projectDetails")
+  @PreAuthorize("hasRole('ADMIN')")
+  @GetMapping("/projectDetails")
     public ResponseEntity<List<ProjectDetails>> getProjectDetails() {
-        List<Project> projects = projectRepository.findAll();
-        List<ProjectDetails> projectDetailsList = projects.stream().map(project -> {
-            List<String> employeeNames = project.getProjectAssignments().stream()
-                    .map(assignment -> assignment.getEmployee().getFirstname() + " " + assignment.getEmployee().getLastname())
-                    .collect(Collectors.toList());
-            return new ProjectDetails(project.getProjectId(), project.getName(),
-                    project.getManager().getFirstname() + " " + project.getManager().getLastname(),
-                    employeeNames);
-        }).collect(Collectors.toList());
-        return ResponseEntity.ok(projectDetailsList);
+        List<ProjectDetails> projectDetails = adminService.getAllProjectDetails();
+        return ResponseEntity.ok(projectDetails);
     }
-    
+  
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/deleteEmployees/{id}")
     public ResponseEntity<?> deleteEmployee(@PathVariable Long id) {
-        try {  
-            Optional<User> userOptional = userRepository.findById(id);
-            if (!userOptional.isPresent()) {
-                return ResponseEntity.notFound().build();
-            }
-
-            if (!assignmentRepository.findByEmployeeUserId(id).isEmpty()) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("Cannot delete user with active assignments");
-            }
-
-            userRepository.deleteById(id);
+        try {
+            adminService.deleteEmployee(id);
             return ResponseEntity.ok("User deleted successfully");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete user");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
         }
     }
 

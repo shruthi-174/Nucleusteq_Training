@@ -98,7 +98,5 @@ public class Project {
 	public void setProjectRequestResources(List<RequestResource> projectRequestResources) {
 		this.projectRequestResources = projectRequestResources;
 	}
-
-   
 	}
     

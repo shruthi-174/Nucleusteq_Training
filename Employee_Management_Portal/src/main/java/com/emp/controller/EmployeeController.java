@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.emp.dto.ProjectDetails;
 import com.emp.dto.UserRequest;
 import com.emp.entities.User;
-import com.emp.repository.UserRepository;
 import com.emp.service.EmployeeService;
 
 @RestController
@@ -27,9 +26,6 @@ public class EmployeeController {
 
     @Autowired
     private EmployeeService employeeService;
-    
-    @Autowired
-    private UserRepository userRepository;
 
     @PreAuthorize("hasRole('EMPLOYEE')")
     @PutMapping("/update-profile/{userId}")
@@ -73,16 +69,28 @@ public class EmployeeController {
  
     @PreAuthorize("hasRole('EMPLOYEE')")
     @GetMapping("/employees")
-    public ResponseEntity<List<User>> getEmployees() {
-        List<User> employees = userRepository.findByRole(User.Role.EMPLOYEE);
-        return ResponseEntity.ok(employees);
-    }
-    
+    public ResponseEntity<?> getEmployees() {
+    	try {
+            List<User> employees = employeeService.getAllEmployees();
+            return ResponseEntity.ok(employees);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error: " + e.getMessage());
+        }
+   }
+   
     @PreAuthorize("hasRole('EMPLOYEE')")
     @GetMapping("/managers")
-    public ResponseEntity<List<User>> getManagers() {
-        List<User> managers = userRepository.findByRole(User.Role.MANAGER);
-        return ResponseEntity.ok(managers);
-    }
+    public ResponseEntity<?> getManagers() {
+    	try {
+            List<User> managers = employeeService.getAllManagers();
+            return ResponseEntity.ok(managers);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error: " + e.getMessage());
+        }
+    	}
+      
+    
 
 }

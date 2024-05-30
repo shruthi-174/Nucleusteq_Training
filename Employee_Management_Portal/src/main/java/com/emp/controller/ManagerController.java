@@ -20,8 +20,6 @@ import com.emp.dto.UserRequest;
 import com.emp.entities.Project;
 import com.emp.entities.RequestResource;
 import com.emp.entities.User;
-import com.emp.repository.ProjectRepository;
-import com.emp.repository.UserRepository;
 import com.emp.service.ManagerService;
 
 @RestController
@@ -30,12 +28,6 @@ public class ManagerController {
 
     @Autowired
     private ManagerService managerService;
-    
-    @Autowired
-    private  UserRepository userRepository;
-
-    @Autowired
-    private ProjectRepository projectRepository;
     
     @PreAuthorize("hasRole('MANAGER')")
     @PutMapping("/update-profile/{userId}")
@@ -68,25 +60,38 @@ public class ManagerController {
     }
     
     @PreAuthorize("hasRole('MANAGER')")
-    @GetMapping("/employees")
-    public ResponseEntity<List<User>> getEmployees() {
-        List<User> employees = userRepository.findByRole(User.Role.EMPLOYEE);
-        return ResponseEntity.ok(employees);
+    @GetMapping("/projects")
+    public ResponseEntity<?> getProjects() {
+    	try {
+            List<Project> projects = managerService.getAllProjects();
+            return ResponseEntity.ok(projects);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+        }
     }
+
+    @PreAuthorize("hasRole('MANAGER')")
+    @GetMapping("/employees")
+    public ResponseEntity<?> getEmployees() {
+    	try {
+            List<User> employees = managerService.getAllEmployees();
+            return ResponseEntity.ok(employees);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+        }
+   }
     
     @PreAuthorize("hasRole('MANAGER')")
     @GetMapping("/managers")
-    public ResponseEntity<List<User>> getManagers() {
-        List<User> managers = userRepository.findByRole(User.Role.MANAGER);
-        return ResponseEntity.ok(managers);
-    }
-    
-    @PreAuthorize("hasRole('MANAGER')")
-    @GetMapping("/projects")
-    public ResponseEntity<List<Project>> getProjects() {
-        List<Project> projects = projectRepository.findAll();
-        return ResponseEntity.ok(projects);
-    }
+    public ResponseEntity<?> getManagers() {
+    	try {
+            List<User> managers = managerService.getAllManagers();
+            return ResponseEntity.ok(managers);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+        }
+    	}
+
     
     @PreAuthorize("hasRole('MANAGER')")
     @PostMapping("/request-resources")

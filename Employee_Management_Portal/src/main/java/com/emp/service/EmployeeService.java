@@ -104,4 +104,20 @@ public class EmployeeService {
 
 	        return projectDetails;
 	    }
+	    
+	    public List<User> getAllEmployees() {
+	        if (userRepository == null) {
+	            throw new IllegalStateException("Employee not found.");
+	        }
+	        return userRepository.findByRole(User.Role.EMPLOYEE);
+	    }
+	    
+
+	    public List<User> getAllManagers() {
+	    	 if (userRepository == null) {
+	             throw new IllegalStateException("Manager not found.");
+	         }
+	         return userRepository.findByRole(User.Role.MANAGER);
+	        }
+
 }

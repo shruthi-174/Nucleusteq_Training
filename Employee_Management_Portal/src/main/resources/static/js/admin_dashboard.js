@@ -196,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const projectPayload = {
                     name: projectName,
                     description: projectDescription,
-                    manager: { userId: managerId }
+                    managerId:  managerId
                 };
 
                 const response = await fetch('/api/admin/createProject', {
@@ -395,6 +395,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const employeeId = await getEmployeeIdFromName(employeeName);
             console.log('Employee ID:', employeeId);
+
             const response = await fetch(`/api/admin/unassignProject/${projectId}/${employeeId}`, {
                 method: 'POST',
                 headers: {
@@ -406,14 +407,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) {
                 const errorText = await response.text();
                 if (errorText === 'Assignment not found.') {
-                    alert('All employees have been unassigned from this project.');
-                    location.reload(); 
+                    alert('This employee is already unassigned from the project.');
                 } else {
                     throw new Error('Failed to unassign employee');
                 }
             } else {
                 alert('Employee unassigned successfully');
-                location.reload(); 
+                location.reload();
             }
         } catch (error) {
             console.error('Error unassigning employee:', error);
@@ -422,17 +422,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     async function getEmployeeIdFromName(employeeName) {
         try {
+            console.log('Fetching employees...');
             const response = await fetch('/api/admin/employees', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             });
 
+            console.log('Response status:', response.status);
+
             if (!response.ok) {
-                throw new Error('Failed to fetch employees');
+                const errorMessage = await response.text();
+                console.error('Failed to fetch employees:', errorMessage);
+                throw new Error(`Failed to fetch employees: ${errorMessage}`);
             }
 
             const employees = await response.json();
+            console.log('Employees:', employees);
+
             const employee = employees.find(emp => `${emp.firstname} ${emp.lastname}` === employeeName);
 
             if (employee) {
@@ -442,10 +449,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             console.error('Error fetching employees:', error);
-            alert(`Error: ${error.message}`);
+            throw error;
         }
-        
-      
     }
     
     function showUnassignModal(projectId, employeeNames) {

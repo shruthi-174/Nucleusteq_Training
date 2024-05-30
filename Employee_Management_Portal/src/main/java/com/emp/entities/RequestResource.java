@@ -35,8 +35,6 @@ public class RequestResource {
 		// TODO Auto-generated constructor stub
 	}
 
-
-
 		public RequestResource(Long requestId, User manager, Project project, User employee, RequestStatus status) {
 			super();
 			this.requestId = requestId;

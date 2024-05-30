@@ -261,6 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    
     if (createRequestForm) {
         createRequestForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -309,9 +310,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     alert('Request has been sent!');
                     hideCreateRequestModal();
                 } else {
-                    const error = await response.text();
-                    alert(error);
-                }
+                    alert('This email does not belongs to employee');
+                    const errorText = await response.text();                }
             } catch (error) {
                 console.error('Error:', error);
                 alert('An error occurred while creating the request');

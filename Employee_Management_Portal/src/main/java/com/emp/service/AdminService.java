@@ -1,11 +1,14 @@
 package com.emp.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.emp.dto.ProjectDetails;
+import com.emp.dto.ProjectRequest;
 import com.emp.dto.UserRequest;
 import com.emp.entities.Assignment;
 import com.emp.entities.Project;
@@ -40,7 +43,7 @@ public class AdminService {
         if (userRepository.findByEmail(userRequest.getEmail()).isPresent()) {
             throw new Exception("Email is already registered");
         }
-
+ 
         User user = new User();
         user.setFirstname(userRequest.getFirstname());
         user.setLastname(userRequest.getLastname());
@@ -49,20 +52,18 @@ public class AdminService {
         user.setRole(User.Role.valueOf(userRequest.getRole().toUpperCase()));
         userRepository.save(user);
     }
-
-    public boolean createProject(String name, String description, Long managerId) {
-        User manager = userRepository.findByUserIdAndRole(managerId, User.Role.MANAGER)
+    
+    public Project createProject(ProjectRequest projectRequest) {
+    	User manager = userRepository.findByUserIdAndRole(projectRequest.getManagerId(), User.Role.MANAGER)
                 .orElseThrow(() -> new IllegalArgumentException("This ID does not belong to a manager."));
 
         Project project = new Project();
-        project.setName(name);
-        project.setDescription(description);
+        project.setName(projectRequest.getName());
+        project.setDescription(projectRequest.getDescription());
         project.setManager(manager);
 
-        projectRepository.save(project);
-        return true;
+        return projectRepository.save(project);
     }
-
     public void assignProject(Long projectId, Long employeeId) {
         List<Assignment> existingAssignments = assignmentRepository.findByEmployeeUserId(employeeId);
         if (!existingAssignments.isEmpty()) {
@@ -93,6 +94,50 @@ public class AdminService {
         assignmentRepository.delete(assignment);
     }
     
+   
+    public List<Project> getAllProjects() {
+    	if (projectRepository == null) {
+            throw new IllegalStateException("Project not found.");
+        }
+        return projectRepository.findAll();
+       }
+    
+    
+    public List<User> getAllEmployees() {
+        if (userRepository == null) {
+            throw new IllegalStateException("Employee not found.");
+        }
+        return userRepository.findByRole(User.Role.EMPLOYEE);
+    }
+    
+
+    public List<User> getAllManagers() {
+    	 if (userRepository == null) {
+             throw new IllegalStateException("Manager not found.");
+         }
+         return userRepository.findByRole(User.Role.MANAGER);
+        }
+
+    public List<User> getAllUsers() {
+    	 if (userRepository == null) {
+             throw new IllegalStateException("User not found.");
+         }
+         return userRepository.findAll();
+        }
+   
+    
+    public List<ProjectDetails> getAllProjectDetails() {
+        List<Project> projects = projectRepository.findAll();
+        return projects.stream().map(project -> {
+            List<String> employeeNames = project.getProjectAssignments().stream()
+                    .map(assignment -> assignment.getEmployee().getFirstname() + " " + assignment.getEmployee().getLastname())
+                    .collect(Collectors.toList());
+            return new ProjectDetails(project.getProjectId(), project.getName(),
+                    project.getManager().getFirstname() + " " + project.getManager().getLastname(),
+                    employeeNames);
+        }).collect(Collectors.toList());
+    }
+
     public void deleteEmployee(Long employeeId) {
         User employee = userRepository.findByUserIdAndRole(employeeId, User.Role.EMPLOYEE)
                 .orElseThrow(() -> new IllegalArgumentException("Employee not found."));
@@ -109,7 +154,10 @@ public class AdminService {
 
         userRepository.save(employee);
     }
-
+    
+    public List<RequestResource> getAllResourceRequests() {
+        return requestResourceRepository.findAll();
+    }
     public RequestResource approveResourceRequest(Long requestId) {
         RequestResource request = requestResourceRepository.findById(requestId)
                 .orElseThrow(() -> new IllegalArgumentException("Request not found"));
@@ -124,9 +172,6 @@ public class AdminService {
 
         request.setStatus(RequestStatus.REJECTED);
         return requestResourceRepository.save(request);
-    }
-    public List<RequestResource> getAllResourceRequests() {
-        return requestResourceRepository.findAll();
     }
 
 }

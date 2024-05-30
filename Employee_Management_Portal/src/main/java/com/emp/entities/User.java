@@ -26,10 +26,6 @@ public class User {
     @JsonManagedReference(value = "project-manager")
     private List<Project> managerProjects;
 
-    @OneToMany(mappedBy = "employee")
-    @JsonManagedReference(value = "assignment-employee")
-    private List<Assignment> employeeAssignments;
-
     @OneToMany(mappedBy = "manager")
     @JsonIgnoreProperties(value = {"manager", "employee"})
     private List<RequestResource> managerRequestResources;
@@ -53,24 +49,14 @@ public class User {
 		// TODO Auto-generated constructor stub
 	}
 
+    public User(String firstname, String lastname, String email, String password, Role role) {
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
 
-	public User(Long userId, String firstname, String lastname, String email, String password, Role role,
-			List<Project> managerProjects, List<Assignment> employeeAssignments,
-			List<RequestResource> managerRequestResources, List<Skill> skills) {
-		super();
-		this.userId = userId;
-		this.firstname = firstname;
-		this.lastname = lastname;
-		this.email = email;
-		this.password = password;
-		this.role = role;
-		this.managerProjects = managerProjects;
-		this.employeeAssignments = employeeAssignments;
-		this.managerRequestResources = managerRequestResources;
-		this.skills = skills;
-	}
-
-	
 
 	public Long getUserId() {
 		return userId;
@@ -139,16 +125,6 @@ public class User {
 
 	public void setManagerProjects(List<Project> managerProjects) {
 		this.managerProjects = managerProjects;
-	}
-
-
-	public List<Assignment> getEmployeeAssignments() {
-		return employeeAssignments;
-	}
-
-
-	public void setEmployeeAssignments(List<Assignment> employeeAssignments) {
-		this.employeeAssignments = employeeAssignments;
 	}
 
 
