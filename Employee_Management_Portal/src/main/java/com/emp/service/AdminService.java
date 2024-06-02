@@ -94,37 +94,39 @@ public class AdminService {
         assignmentRepository.delete(assignment);
     }
     
-   
     public List<Project> getAllProjects() {
-    	if (projectRepository == null) {
+        List<Project> projects = projectRepository.findAll();
+        if (projects == null || projects.isEmpty()) {
             throw new IllegalStateException("Project not found.");
         }
-        return projectRepository.findAll();
-       }
+        return projects;
+    }
     
     
     public List<User> getAllEmployees() {
-        if (userRepository == null) {
-            throw new IllegalStateException("Employee not found.");
+        List<User> employees = userRepository.findByRole(User.Role.EMPLOYEE);
+        if (employees == null || employees.isEmpty()) {
+            throw new IllegalStateException("Employees not found.");
         }
-        return userRepository.findByRole(User.Role.EMPLOYEE);
+        return employees;
     }
-    
+
 
     public List<User> getAllManagers() {
-    	 if (userRepository == null) {
-             throw new IllegalStateException("Manager not found.");
-         }
-         return userRepository.findByRole(User.Role.MANAGER);
+        List<User> managers = userRepository.findByRole(User.Role.MANAGER);
+        if (managers == null || managers.isEmpty()) {
+            throw new IllegalStateException("Manager not found.");
         }
-
+        return managers;
+    }
+    
     public List<User> getAllUsers() {
-    	 if (userRepository == null) {
-             throw new IllegalStateException("User not found.");
-         }
-         return userRepository.findAll();
+        List<User> users = userRepository.findAll();
+        if (users == null || users.isEmpty()) {
+            throw new IllegalStateException("User not found.");
         }
-   
+        return users;
+    }
     
     public List<ProjectDetails> getAllProjectDetails() {
         List<Project> projects = projectRepository.findAll();

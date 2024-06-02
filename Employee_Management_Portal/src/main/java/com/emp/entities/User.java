@@ -138,6 +138,14 @@ public class User {
 	}
 
 
+	public List<RequestResource> getEmployeeRequestResource() {
+		return employeeRequestResource;
+	}
+
+	public void setEmployeeRequestResource(List<RequestResource> employeeRequestResource) {
+		this.employeeRequestResource = employeeRequestResource;
+	}
+
 	public List<Skill> getSkills() {
 		return skills;
 	}

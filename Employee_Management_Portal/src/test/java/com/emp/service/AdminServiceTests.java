@@ -18,6 +18,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.emp.dto.ProjectDetails;
 import com.emp.dto.ProjectRequest;
 import com.emp.dto.UserRequest;
 import com.emp.entities.Assignment;
@@ -167,7 +168,12 @@ public class AdminServiceTests {
 	        assertEquals(2, Projects.size());
 	        verify(projectRepository, times(1)).findAll();
 	    }
-
+	    @Test
+	    void testGetAllProjects_Failure() {
+	        when(projectRepository.findAll()).thenReturn(null);
+	        assertThrows(IllegalStateException.class, () -> adminService.getAllProjects());
+	    }
+	   
 	    @Test
 	    void testGetAllEmployees() {
 	        List<User> employees = Arrays.asList(new User(), new User());
@@ -177,7 +183,12 @@ public class AdminServiceTests {
 	        assertEquals(2, Employees.size());
 	        verify(userRepository, times(1)).findByRole(User.Role.EMPLOYEE);
 	    }
-
+	    @Test
+	    void testGetAllEmployees_Failure() {
+	        when(userRepository.findByRole(User.Role.EMPLOYEE)).thenReturn(null);
+	        assertThrows(IllegalStateException.class, () -> adminService.getAllEmployees());
+	    }
+	    
 	    @Test
 	    void testGetAllManagers() {
 	        List<User> managers = Arrays.asList(new User(), new User());
@@ -187,7 +198,11 @@ public class AdminServiceTests {
 	        assertEquals(2, Managers.size());
 	        verify(userRepository, times(1)).findByRole(User.Role.MANAGER);
 	    }
-
+	    @Test
+	    void testGetAllManagers_Failure() {
+	        when(userRepository.findByRole(User.Role.MANAGER)).thenReturn(null);
+	        assertThrows(IllegalStateException.class, () -> adminService.getAllManagers());
+	    }
 	    @Test
 	    void testGetAllUsers() {
 	        List<User> users = Arrays.asList(new User(), new User());
@@ -196,6 +211,49 @@ public class AdminServiceTests {
 	        List<User> Users = adminService.getAllUsers();
 	        assertEquals(2, Users.size());
 	        verify(userRepository, times(1)).findAll();
+	    }
+	    @Test
+	    void testGetAllUsers_Failure() {
+	        when(userRepository.findAll()).thenReturn(null);
+	        assertThrows(IllegalStateException.class, () -> adminService.getAllUsers());
+	    }
+	   
+	    
+	    @Test
+	    void testGetAllProjectDetails() {
+	        Project project1 = new Project();
+	        project1.setProjectId(1L);
+	        project1.setName("Project 1");
+
+	        User manager1 = new User();
+	        manager1.setFirstname("Manager1");
+	        manager1.setLastname("Mgr");
+	        project1.setManager(manager1);
+
+	        User employee1 = new User();
+	        employee1.setFirstname("Employee1");
+	        employee1.setLastname("Emp");
+
+	        Assignment assignment1 = new Assignment();
+	        assignment1.setEmployee(employee1);
+	        assignment1.setProject(project1);
+
+	        List<Assignment> assignments = Arrays.asList(assignment1);
+	        project1.setProjectAssignments(assignments);
+
+	        List<Project> projects = Arrays.asList(project1);
+
+	        when(projectRepository.findAll()).thenReturn(projects);
+	        List<ProjectDetails> projectDetails = adminService.getAllProjectDetails();
+
+	        assertEquals(1, projectDetails.size());
+	        ProjectDetails details1 = projectDetails.get(0);
+	        assertEquals(1L, details1.getProjectId());
+	        assertEquals("Project 1", details1.getProjectName());
+	        assertEquals("Manager1 Mgr", details1.getManagerName());
+	        assertEquals(1, details1.getEmployeeNames().size());
+	        assertTrue(details1.getEmployeeNames().contains("Employee1 Emp"));
+	        verify(projectRepository, times(1)).findAll();
 	    }
 	    
 	    @Test
@@ -283,8 +341,6 @@ public class AdminServiceTests {
 	    	    assertEquals(2, result.size());
 	    	    verify(requestResourceRepository, times(1)).findAll();
 	    }
-	    
-	    
 	    
 	    }
 	   

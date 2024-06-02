@@ -37,7 +37,7 @@ public class ManagerController {
             if (isUpdated) {
                 return ResponseEntity.ok("User profile updated successfully");
             } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unknown error");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to update profile.");
             }
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -69,6 +69,16 @@ public class ManagerController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
         }
     }
+    @PreAuthorize("hasRole('MANAGER')")
+    @GetMapping("/projects/{managerId}")
+    public ResponseEntity<?> getProjectsByManagerId(@PathVariable Long managerId) {
+        try {
+            List<Project> projects = managerService.getProjectsByManagerId(managerId);
+            return ResponseEntity.ok(projects);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+        }
+    }
 
     @PreAuthorize("hasRole('MANAGER')")
     @GetMapping("/employees")
@@ -95,13 +105,12 @@ public class ManagerController {
     
     @PreAuthorize("hasRole('MANAGER')")
     @PostMapping("/request-resources")
-    public ResponseEntity<List<RequestResource>> createRequestResources(@RequestBody RequestResourceRequest requestResourceRequest) {
+    public ResponseEntity<?> createRequestResources(@RequestBody RequestResourceRequest requestResourceRequest) {
         try {
-            System.out.println("Received request: " + requestResourceRequest);
             List<RequestResource> requestResources = managerService.createRequestResources(requestResourceRequest);
             return ResponseEntity.ok(requestResources);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            return ResponseEntity.badRequest().body("Invalid Request");
         }
     }
 

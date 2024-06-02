@@ -49,8 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             <p>Project Manager: ${project.managerName}</p>
                             <p>Team Members:</p>
                             <ul>
-                                ${project.employeeNames.map(name => `<li>${name}</li>`).join('')}
-                            </ul>
+                        		${project.employeeNames.map(name => `<li>${name}</li>`).join('')}
+                        	</ul>
                         `;
                         projectList.appendChild(projectDiv);
                     });

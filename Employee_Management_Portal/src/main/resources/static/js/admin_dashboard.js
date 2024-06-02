@@ -508,7 +508,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const tableBody = manageUsersTable.getElementsByTagName('tbody')[0];
         tableBody.innerHTML = '';
 
-        users.forEach((user, index) => {
+        // Filter out users with the role of "Manager"
+        const employees = users.filter(user => user.role.toLowerCase() !== 'manager');
+
+        employees.forEach((user, index) => {
             const row = document.createElement('tr');
             const serialNumberCell = document.createElement('td');
             const firstNameCell = document.createElement('td');
@@ -532,7 +535,6 @@ document.addEventListener('DOMContentLoaded', () => {
             deleteButton.textContent = 'Delete';
             deleteButton.classList.add('delete-btn'); 
             deleteButton.addEventListener('click', () => deleteUser(user.userId));
-
 
             actionsCell.appendChild(editButton);
             actionsCell.appendChild(deleteButton);

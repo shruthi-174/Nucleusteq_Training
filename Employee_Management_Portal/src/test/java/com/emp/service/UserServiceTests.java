@@ -37,7 +37,7 @@ public class UserServiceTests {
     @AfterEach
     public void tearDown() {
     }
-//    
+   
     @Test
     void testLoadUserByUsername() {
         String email = "emp@nuclesusteq.com";
@@ -74,7 +74,7 @@ public class UserServiceTests {
     	 Long userId = 1L;
          User user = new User();
          user.setUserId(userId);
-         user.setEmail("test@nucleusteq.com");
+         user.setEmail("emp@nucleusteq.com");
          
          //User does not exist
          when(userRepository.findByUserId(userId)).thenReturn(Optional.empty());
@@ -85,7 +85,7 @@ public class UserServiceTests {
          when(userRepository.findByUserId(userId)).thenReturn(Optional.of(user));
          User resultExists = userService.getUser(userId);
          assertEquals(userId, resultExists.getUserId());
-         assertEquals("test@nucleusteq.com", resultExists.getEmail());
+         assertEquals("emp@nucleusteq.com", resultExists.getEmail());
 
 
     }

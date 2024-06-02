@@ -72,15 +72,6 @@
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
     </dependency>
-    <dependency>
-    <groupId>org.slf4j</groupId>
-    <artifactId>slf4j-api</artifactId>
-</dependency>
-<dependency>
-    <groupId>org.slf4j</groupId>
-    <artifactId>slf4j-simple</artifactId>
-</dependency>
-    
 </dependencies>
 
 
@@ -107,7 +98,7 @@
     			 <executions>
         			<execution>
             			<id>validate</id>
-            			<phase>verify</phase> <!-- Change the phase to 'verify' -->
+            			<phase>verify</phase>
            				<goals>
                 			<goal>check</goal>
            			    </goals>

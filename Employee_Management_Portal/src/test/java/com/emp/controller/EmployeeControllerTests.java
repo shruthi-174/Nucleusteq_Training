@@ -2,8 +2,8 @@ package com.emp.controller;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -57,7 +57,7 @@ public class EmployeeControllerTests {
     }
     
     @Test
-    public void testUpdateUserProfile_Success() throws Exception {
+    public void testUpdateUserProfile() throws Exception {
         when(employeeService.updateUserProfile(anyLong(), any(UserRequest.class))).thenReturn(true);
 
         mockMvc.perform(put("/api/employee/update-profile/{userId}", 1L)
@@ -66,13 +66,42 @@ public class EmployeeControllerTests {
                 .andExpect(status().isOk())
                 .andExpect(content().string("User profile updated successfully"));
     }
+    
+    @Test
+    public void testUpdateUserProfileFailure() throws Exception {
+        when(employeeService.updateUserProfile(anyLong(), any())).thenReturn(false);
+
+        mockMvc.perform(put("/api/employee/update-profile/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"firstname\":\"Employee1\",\"lastname\":\"emp\",\"email\":\"emp@nucleusteq.com\",\"password\":\"password\"}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Failed to update profile."));
+    
+       //Exception Handling
+        when(employeeService.updateUserProfile(anyLong(), any())).thenThrow(new IllegalArgumentException("Invalid input"));
+        mockMvc.perform(put("/api/employee/update-profile/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"firstname\":\"Employee1\",\"lastname\":\"emp\",\"email\":\"emp@nucleusteq.com\",\"password\":\"password\"}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Invalid input"));
+    }
+    
 
     @Test
-    public void testAddSkill_Success() throws Exception {
+    public void testAddSkill() throws Exception {
         mockMvc.perform(post("/api/employee/add-skills/{employeeId}", 1L)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"skillName\":\"Java\"}"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testAddSkill_Empty() throws Exception {
+        mockMvc.perform(post("/api/employee/add-skills/{employeeId}", 1L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"skillName\":\"\"}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Skill name cannot be empty"));
     }
 
     @Test
@@ -117,6 +146,16 @@ public class EmployeeControllerTests {
                 .andExpect(jsonPath("$[0].firstname", is("Employee 1")))
                 .andExpect(jsonPath("$[1].firstname", is("Employee 2")));
     }
+    @Test
+    public void testGetEmployees_Failure() throws Exception {
+        when(employeeService.getAllEmployees()).thenThrow(new RuntimeException("Internal Server Error"));
+
+        mockMvc.perform(get("/api/employee/employees")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().string("Error: Internal Server Error"));
+    }
+    
  
     @Test
     public void testGetManagers() throws Exception {
@@ -130,5 +169,14 @@ public class EmployeeControllerTests {
                 .andExpect(jsonPath("$.length()", is(2)))
                 .andExpect(jsonPath("$[0].firstname", is("Manager 1")))
                 .andExpect(jsonPath("$[1].firstname", is("Manager 2")));
+    }
+    @Test
+    public void testGetManagers_Failure() throws Exception {
+        when(employeeService.getAllManagers()).thenThrow(new RuntimeException("Internal Server Error"));
+
+        mockMvc.perform(get("/api/employee/managers")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().string("Error: Internal Server Error"));
     }
 }

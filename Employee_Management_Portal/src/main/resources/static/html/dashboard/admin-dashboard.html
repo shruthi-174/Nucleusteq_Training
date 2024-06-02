@@ -8,17 +8,13 @@
 </head>
 <body>
 <div class="container">
-    <header>
-        <nav class="navbar">
-            <div class="navbar-logo">
-                <a href="/html/index.html"><img src="/images/logo.png" alt="Company Logo" class="logo"></a>
-            </div>
-            <div class="navbar-menu">
-               <button id="logoutButton">Logout</button>
-            </div>
-        </nav>
-    </header>
+    
     <div class="sidebar" id="sidebar">
+        <div class="welcome-container">
+        <p class="welcome-small">Welcome</p>
+        <p class="welcome-large">ADMIN</p>
+    </div>
+    
         <ul class="nav-links">
             <li>
                 <div class="sidebar-item" id="viewUsersLink">
@@ -35,14 +31,20 @@
                     <a href="#">Manage Users</a>
                 </div>
             </li>
-                    <li>
+            <li>
             <div class="sidebar-item" id="viewRequestsLink">
                 <a href="#">View Requests</a>
             </div>
-        </li>
+           </li>
+           <li>
+            <div class="sidebar-item">
+ 				<a href="#" id="logoutButton">Logout</a>              
+            </div>
+           </li>
         </ul>
     </div>
     <main class="main-content">
+    
     
     <!-- VIEW USERS SECTION -->
         <div id="userTableContainer" style="display: none;">

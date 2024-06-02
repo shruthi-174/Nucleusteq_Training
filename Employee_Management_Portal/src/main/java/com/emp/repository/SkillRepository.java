@@ -10,7 +10,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SkillRepository extends JpaRepository<Skill, Long> {
 	Optional<Skill> findByNameIgnoreCase(String name);
-
-	
 }
 

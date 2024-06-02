@@ -8,17 +8,13 @@
 </head>
 <body>
     <div class="container">
-        <header>
-            <nav class="navbar">
-                <div class="navbar-logo">
-                    <a href="/html/index.html"><img src="/images/logo.png" alt="Company Logo" class="logo"></a>
-                </div>
-                <div class="navbar-menu">
-                   <button id="logoutButton">Logout</button>
-                </div>
-            </nav>
-        </header>
+            
         <div class="sidebar" id="sidebar">
+        <div class="welcome-container">
+        <p class="welcome-small">Welcome</p>
+        <p class="welcome-large">MANAGER</p>
+    </div>
+    
             <ul class="nav-links">
                 <li>
                     <div class="sidebar-item" id="editProfileLinkManager">
@@ -35,7 +31,12 @@
 	                    <a href="#">View Projects</a>
 	                </div>
 	            </li>
-	            </ul>
+	            <li>
+		            <div class="sidebar-item">
+		 				<a href="#" id="logoutButton">Logout</a>              
+		            </div>
+               </li>
+	         </ul>
         </div>
 		<main class="main-content">	
 		  		          
@@ -59,7 +60,7 @@
 					
 					<!-- USER LIST TABLLE -->
 		            <div id="userList" style="display: none;">
-		                <h2>User List:</h2>
+		                <h2>USER LIST</h2>
 		                <table id="userTable">
 		                    <thead>
 		                        <tr>
@@ -138,7 +139,7 @@
 		            
           		    <!-- VIEW PROJECT SECTION -->
 			        <div id="projectList" style="display: none;" class="mgrprojectList">
-			                <h2>Project List:</h2>
+			                <h2>PROJECT LIST:</h2>
 			                <table id="projectTable">
 			                    <thead>
 			                        <tr>

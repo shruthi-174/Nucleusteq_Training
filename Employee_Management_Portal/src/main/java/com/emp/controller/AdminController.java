@@ -37,7 +37,7 @@ public class AdminController {
             adminService.registerUser(userRequest);
             return ResponseEntity.ok("User registered successfully");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
         }
     }
 
@@ -132,7 +132,7 @@ public class AdminController {
             adminService.deleteEmployee(id);
             return ResponseEntity.ok("User deleted successfully");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Unable to delete user: " + e.getMessage());
         }
     }
 
@@ -150,8 +150,12 @@ public class AdminController {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/requests")
     public ResponseEntity<List<RequestResource>> getAllResourceRequests() {
-        List<RequestResource> requests = adminService.getAllResourceRequests();
-        return ResponseEntity.ok(requests);
+        try {
+            List<RequestResource> requests = adminService.getAllResourceRequests();
+            return ResponseEntity.ok(requests);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
     
     @PreAuthorize("hasRole('ADMIN')")
@@ -162,6 +166,7 @@ public class AdminController {
             return ResponseEntity.ok(approvedRequest);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+
         }
     }
 

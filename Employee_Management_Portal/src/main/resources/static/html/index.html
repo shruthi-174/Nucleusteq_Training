@@ -7,20 +7,23 @@
     <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="navbar-logo">
-            <img src="/images/logo.png" alt="Company Logo">
-        </div>
-        <div class="navbar-menu">
-            <a href="login.html" class="login-btn">Login</a>
-        </div>
-    </nav>
 
     <div class="homepage-container">
- 
         <h1 class="welcome-text">Welcome to Employee Management Portal</h1>
-           <img src="/images/homepage.webp" alt="home">
+        <div class="login-box">
+        
+            <h2>Login</h2>
+            <form id="loginForm" action="login.html">
+                <label for="email">Email:</label><br>
+                <input type="email" id="email" name="email" required>
+                <span class="error" id="emailError"></span><br> 
+                <label for="password">Password:</label><br>
+                <input type="password" id="password" name="password" required>
+                <span class="error" id="passwordError"></span><br> 
+                <button type="submit">Login</button>
+            </form>
+        </div>
     </div>
-
+    <script src="/js/login.js"></script>
 </body>
 </html>

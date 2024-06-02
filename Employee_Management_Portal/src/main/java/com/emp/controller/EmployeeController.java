@@ -35,7 +35,7 @@ public class EmployeeController {
             if (isUpdated) {
                 return ResponseEntity.ok("User profile updated successfully");
             } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unknown error");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to update profile.");
             }
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());

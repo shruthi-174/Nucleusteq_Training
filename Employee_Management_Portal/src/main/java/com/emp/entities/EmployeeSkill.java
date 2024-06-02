@@ -11,7 +11,12 @@ public class EmployeeSkill {
 
 	    @Embeddable
 	    public static class EmployeeSkillId implements Serializable {
-	        @Column(name = "employee_user_id") 
+	        /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Column(name = "employee_user_id") 
 	        private Long employeeUserId;
 
 	        @Column(name = "skill_id") 

@@ -11,57 +11,6 @@ body {
     display: flex;
 }
 
-/* Logo Container */
-.logo-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 20px;
-    background-color: #b1d3f7;
-    color: #fff;
-}
-
-.logo-container img {
-    height: 50px;
-    width: auto;
-}
-
-/* Navbar */
-.navbar {
-    background-color: #13579b;
-    color: #fff;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 20px;
-    position: fixed;
-    width: 100%;
-    z-index: 2;
-    top: 0;
-}
-
-.navbar-logo img {
-    height: 45px;
-    width: auto;
-}
-
-.navbar-menu {
-    display: flex;
-    align-items: center;
-}
-
-#logoutButton {
-    background-color: #fff;
-    color: #1f33b6;
-    padding: 10px 11px;
-    border-radius: 5px;
-    text-decoration: none;
-    font-weight: bold;
-    margin-right: 39px;
-    font-size:16px;
-    cursor: pointer;
-}
-
 /* Sidebar */
 .sidebar {
     width: 250px;
@@ -69,8 +18,8 @@ body {
     padding: 20px;
     color: #fff;
     position: fixed;
-    top: 60px; 
-    bottom: 0;
+    top: 0px; 
+    bottom: 0px;
     left: 0;
     overflow-y: auto;
     transition: width 0.3s ease;
@@ -85,7 +34,8 @@ body {
 
 .sidebar-item {
     padding: 10px 20px;
-    margin-bottom: 5px;
+    margin-bottom: 19px;
+    margin-top:12px;
 }
 
 /* User Info */
@@ -102,10 +52,22 @@ body {
 }
 
 /* Dashboard Title */
-.dashboard-title {
-    font-size: 24px;
-    margin-bottom: 20px;
+.welcome-container {
+    text-align: center;
+    margin-bottom: 30px;
+    margin-right:25px;
 }
+
+.welcome-small {
+    font-size: 16px;
+}
+
+.welcome-large {
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: -5px; 
+}
+
 
 /* Navigation Links */
 .nav-links {
@@ -129,8 +91,7 @@ body {
     padding: 20px;
     background-color: #ecf0f1;
     flex: 1;
-    margin-top: 60px; 
-    min-height: 86vh;
+    min-height: 94vh;
 }
 
 /* Modal */
@@ -169,10 +130,6 @@ body {
     top: 10px;
     right: 10px;
     cursor: pointer;
-}
-/* Space between Navbar and Sidebar */
-.main-content {
-    margin-top: 60px;
 }
 
 /* Form styling */
@@ -224,7 +181,7 @@ body {
 }
 
 /* User Table */
-#userTable, #projectTable, #manageUsersTable {
+#userTable, #manageUsersTable {
     margin: 0 auto;
     width: 80%;
     border-collapse: collapse;
@@ -248,13 +205,28 @@ body {
     background-color: #f1f1f1;
 }
 
+#projectTable {
+	margin-top:45px;
+    width: 97%;
+    border-collapse: collapse;
+    background-color: white;
+}
+
+#projectTableContainer #projectTable{
+	    width: 85%;
+	    margin-left:77px;
+	
+}
+
+
 /* Additional Styles */
 .table-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 50px;
     margin-left: 40px;
+    margin-top:18px;
 }
 
 .create-user-btn, .create-project-btn{
@@ -286,6 +258,8 @@ body {
     cursor: pointer;
     font-size: 16px;
     border-radius: 5px;
+        margin-left: 12px;
+    
 }
 
 .delete-btn {
@@ -308,7 +282,7 @@ body {
 }
 
 #manageUsersTable .delete-btn {
-    margin-left: 5px; 
+    margin-left: 10px; 
 }
 
 #manageUsersTable .edit-btn {
@@ -422,7 +396,7 @@ body {
     padding: 5px 10px;
     border-radius: 3px;
     cursor: pointer;
-    margin-right: 5px;
+    margin-right: 10px; 
 }
 
 #requestsTable td .reject-btn {
@@ -444,8 +418,9 @@ body {
 }
 
 #projectList {
-    margin-bottom: 20px;
+    margin-bottom: 30px;
 }
+
 
 #projectList ul {
     list-style: none; 
@@ -455,6 +430,11 @@ body {
 #projectList li {
     margin-bottom: 5px;
     padding: 5px;
+        margin-left: 12px;
+    
+}
+#projectList p {
+    font-weight: bold;
 }
 /* Make "Project Manager" and "Team Members" bold */
 #projectList h3 {
@@ -512,7 +492,7 @@ body {
 #userList table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;  
+    margin-top: 40px;  
 }
 #userList th, #userList td {
     padding: 10px;
@@ -529,8 +509,9 @@ body {
     background-color: #ddd;
 }
 #projectList {
-    margin-top: 20px;
+    margin-top: 30px;
     margin-bottom: -13px;
+
 }
 
 /* MANAGER DASHBOARD*/

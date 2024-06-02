@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -63,9 +64,9 @@ public class ManagerServiceTests {
     @Test
     public void testUpdateUserProfile() {
         Long userId = 1L;
-        UserRequest userRequest = new UserRequest("Employee1", "Emp", "emp1@nucleusteq.com", "Password123", "EMPLOYEE");
+        UserRequest userRequest = new UserRequest("Manager1", "Mgr", "mgr1@nucleusteq.com", "Password123", "MANAGER");
         User user = new User();
-        user.setEmail("emp1@nucleusteq.com");
+        user.setEmail("mgr1@nucleusteq.com");
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(userRepository.findByEmail(userRequest.getEmail())).thenReturn(Optional.empty());
@@ -74,11 +75,20 @@ public class ManagerServiceTests {
         boolean result = managerService.updateUserProfile(userId, userRequest);
 
         assertTrue(result);
-        assertEquals("Employee1", user.getFirstname());
-        assertEquals("Emp", user.getLastname());
-        assertEquals("emp1@nucleusteq.com", user.getEmail());
+        assertEquals("Manager1", user.getFirstname());
+        assertEquals("Mgr", user.getLastname());
+        assertEquals("mgr1@nucleusteq.com", user.getEmail());
         assertEquals("encodedPassword", user.getPassword());
         verify(userRepository).save(user);
+    }
+    @Test
+    public void testUpdateUserProfile_Failure_UserNotFound() {
+        Long userId = 1L;
+        UserRequest userRequest = new UserRequest("Manager1", "Mgr", "mgr1@nucleusteq.com", "Password123", "MANAGER");
+
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class, () -> managerService.updateUserProfile(userId, userRequest));
     }
 
     @Test
@@ -147,5 +157,108 @@ public class ManagerServiceTests {
         verify(userRepository).findByEmail("emp1@nucleusteq.com");
         verify(userRepository).findByEmail("emp2@nucleusteq.com");
         verify(requestResourceRepository, times(2)).save(any(RequestResource.class));
+    }
+    
+    @Test
+    public void testCreateRequestResources_NoValidEmployees() {
+        RequestResourceRequest request = new RequestResourceRequest();
+        request.setProjectId(1L);
+        request.setManagerUserId(1L);
+        request.setEmployeeEmails(Arrays.asList("invalid@nucleusteq.com", "another.invalid@nucleusteq.com"));
+
+        when(projectRepository.findById(anyLong())).thenReturn(Optional.of(new Project()));
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(new User()));
+        when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class, () -> managerService.createRequestResources(request));
+        verify(requestResourceRepository, never()).save(any(RequestResource.class));
+    }
+    
+    @Test
+    void testGetAllProjects() {
+        List<Project> projects = Arrays.asList(new Project(), new Project());
+        when(projectRepository.findAll()).thenReturn(projects);
+
+        List<Project> Projects = managerService.getAllProjects();
+        assertEquals(2, Projects.size());
+        verify(projectRepository, times(1)).findAll();
+    }
+    @Test
+    void testGetAllProjects_Failure() {
+        when(projectRepository.findAll()).thenReturn(null);
+        assertThrows(IllegalStateException.class, () -> managerService.getAllProjects());
+    }
+   
+
+    @Test
+    public void testGetProjectsByManagerId() {
+        Long managerId = 1L;
+        User manager = new User();
+        manager.setUserId(managerId);
+        manager.setRole(User.Role.MANAGER);
+
+        List<Project> projects = new ArrayList<>();
+        Project project1 = new Project();
+        project1.setProjectId(1L);
+        project1.setName("Project 1");
+        project1.setManager(manager);
+        projects.add(project1);
+
+        when(userRepository.findById(managerId)).thenReturn(Optional.of(manager));
+        when(projectRepository.findAll()).thenReturn(projects);
+
+        List<Project> result = managerService.getProjectsByManagerId(managerId);
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals("Project 1", result.get(0).getName());
+    }
+    @Test
+    public void testGetProjectsByManagerId_NoProjectsFound() {
+        Long managerId = 1L;
+        User manager = new User();
+        manager.setUserId(managerId);
+        manager.setRole(User.Role.MANAGER);
+
+        when(userRepository.findById(managerId)).thenReturn(Optional.of(manager));
+        when(projectRepository.findAll()).thenReturn(Collections.emptyList());
+        assertThrows(IllegalStateException.class, () -> managerService.getProjectsByManagerId(managerId));
+    }
+
+    @Test
+    public void testGetProjectsByManagerId_ManagerNotFound() {
+        Long managerId = 1L;
+
+        when(userRepository.findById(managerId)).thenReturn(Optional.empty());
+        assertThrows(IllegalArgumentException.class, () -> managerService.getProjectsByManagerId(managerId));
+    }
+
+    @Test
+    void testGetAllEmployees() {
+        List<User> employees = Arrays.asList(new User(), new User());
+        when(userRepository.findByRole(User.Role.EMPLOYEE)).thenReturn(employees);
+
+        List<User> Employees = managerService.getAllEmployees();
+        assertEquals(2, Employees.size());
+        verify(userRepository, times(1)).findByRole(User.Role.EMPLOYEE);
+    }
+    @Test
+    void testGetAllEmployees_Failure() {
+        when(userRepository.findByRole(User.Role.EMPLOYEE)).thenReturn(null);
+        assertThrows(IllegalStateException.class, () -> managerService.getAllEmployees());
+    }
+    
+    @Test
+    void testGetAllManagers() {
+        List<User> managers = Arrays.asList(new User(), new User());
+        when(userRepository.findByRole(User.Role.MANAGER)).thenReturn(managers);
+
+        List<User> Managers = managerService.getAllManagers();
+        assertEquals(2, Managers.size());
+        verify(userRepository, times(1)).findByRole(User.Role.MANAGER);
+    }
+    @Test
+    void testGetAllManagers_Failure() {
+        when(userRepository.findByRole(User.Role.MANAGER)).thenReturn(null);
+        assertThrows(IllegalStateException.class, () -> managerService.getAllManagers());
     }
 }

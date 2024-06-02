@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.Arrays;
@@ -23,6 +22,7 @@ import java.util.Arrays;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.MediaType;
 
+import com.emp.dto.ProjectDetails;
 import com.emp.dto.ProjectRequest;
 import com.emp.dto.UserRequest;
 import com.emp.entities.Project;
@@ -67,6 +67,19 @@ public class AdminControllerTests {
     }
     
     @Test
+    void testRegisterUserFailure() throws Exception {
+        UserRequest userRequest = new UserRequest("Employee1", "Emp", "emp@nucleusteq.com", "password", "EMPLOYEE");
+        doThrow(new RuntimeException("Internal server error")).when(adminService).registerUser(any(UserRequest.class));
+
+        mockMvc.perform(post("/api/admin/add-user")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(userRequest)))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().string("Error: Internal server error"));
+    }
+
+    
+    @Test
     void testAddProject() throws Exception {
         ProjectRequest projectRequest = new ProjectRequest();
         projectRequest.setName("New Project");
@@ -89,6 +102,20 @@ public class AdminControllerTests {
     }
     
     @Test
+    void testAddProjectFailure() throws Exception{
+    	ProjectRequest projectRequest = new ProjectRequest();
+        projectRequest.setName("");
+
+        when(adminService.createProject(any(ProjectRequest.class))).thenThrow(new IllegalArgumentException("Invalid project data"));
+
+        mockMvc.perform(post("/api/admin/createProject")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(projectRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Invalid project data"));
+    }
+    
+    @Test
     void testAssignProject() throws Exception {
         doNothing().when(adminService).assignProject(anyLong(), anyLong());
 
@@ -96,7 +123,16 @@ public class AdminControllerTests {
                 .andExpect(status().isOk())
                 .andExpect(content().string("true"));
     }
+    
+    @Test
+    void testAssignProjectFailure() throws Exception{
+    	doThrow(new IllegalArgumentException("Unable to assign project")).when(adminService).assignProject(anyLong(), anyLong());
 
+        mockMvc.perform(post("/api/admin/assignProject/1/1"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Unable to assign project"));
+    }
+    
     @Test
     void testUnassignProject() throws Exception {
         doNothing().when(adminService).unassignProject(anyLong(), anyLong());
@@ -106,6 +142,15 @@ public class AdminControllerTests {
                 .andExpect(content().string("true"));
     }
 
+    @Test
+    void testUnassignProjectFailure() throws Exception {
+        doThrow(new IllegalArgumentException("Unable to unassign project")).when(adminService).unassignProject(anyLong(), anyLong());
+
+        mockMvc.perform(post("/api/admin/unassignProject/1/1"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Unable to unassign project"));
+    }
+    
     @Test
     void testGetProjects() throws Exception {
         Project project = new Project();
@@ -118,6 +163,16 @@ public class AdminControllerTests {
                 .andExpect(jsonPath("$[0].name").value("New Project"));
     }
 
+    @Test
+    void testGetProjectsFailure() throws Exception {
+        when(adminService.getAllProjects()).thenThrow(new RuntimeException("Internal server error"));
+
+        mockMvc.perform(get("/api/admin/projects"))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().string("Error: Internal server error"));
+    }
+    
+    
     @Test
     void testGetEmployees() throws Exception {
         User employee = new User();
@@ -132,6 +187,15 @@ public class AdminControllerTests {
     }
 
     @Test
+    void testGetEmployeesFailure() throws Exception {
+        when(adminService.getAllEmployees()).thenThrow(new RuntimeException("Internal server error"));
+
+        mockMvc.perform(get("/api/admin/employees"))
+				.andExpect(status().isInternalServerError())
+				.andExpect(content().string("Error: Internal server error"));
+				}
+    
+    @Test
     void testGetManagers() throws Exception {
         User manager = new User();
         manager.setUserId(1L);
@@ -145,6 +209,15 @@ public class AdminControllerTests {
     }
 
     @Test
+    void testGetManagersFailure() throws Exception {
+        when(adminService.getAllManagers()).thenThrow(new RuntimeException("Internal server error"));
+
+        mockMvc.perform(get("/api/admin/managers"))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().string("Error: Internal server error"));
+    }
+    
+    @Test
     void testGetUsers() throws Exception {
         User user = new User();
         user.setUserId(1L);
@@ -155,17 +228,52 @@ public class AdminControllerTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].firstname").value("Admin"));
     }
+    
+    @Test
+    void testGetUsersFailure() throws Exception {
+        when(adminService.getAllUsers()).thenThrow(new RuntimeException("Internal server error"));
 
+        mockMvc.perform(get("/api/admin/users"))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().string("Error: Internal server error"));
+    }  
+
+    @Test
+    void testGetProjectDetails() throws Exception {
+        ProjectDetails projectDetails1 = new ProjectDetails(1L, "Project A", "Manager1", Arrays.asList("Employee1", "Employee2"));
+        ProjectDetails projectDetails2 = new ProjectDetails(2L, "Project B", "Manager1", Arrays.asList("Employee3", "Employee4"));
+        when(adminService.getAllProjectDetails()).thenReturn(Arrays.asList(projectDetails1, projectDetails2));
+
+        mockMvc.perform(get("/api/admin/projectDetails"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].projectName").value("Project A"))
+                .andExpect(jsonPath("$[0].managerName").value("Manager1"))
+                .andExpect(jsonPath("$[0].employeeNames[0]").value("Employee1"))
+                .andExpect(jsonPath("$[0].employeeNames[1]").value("Employee2"))
+                .andExpect(jsonPath("$[1].projectName").value("Project B"))
+                .andExpect(jsonPath("$[1].managerName").value("Manager1"))
+                .andExpect(jsonPath("$[1].employeeNames[0]").value("Employee3"))
+                .andExpect(jsonPath("$[1].employeeNames[1]").value("Employee4"));
+    }
     @Test
     void testDeleteEmployee() throws Exception {
         doNothing().when(adminService).deleteEmployee(anyLong());
 
         mockMvc.perform(delete("/api/admin/deleteEmployees/1"))
-               .andDo(print());
-
+               .andExpect(status().isOk())
+               .andExpect(content().string("User deleted successfully"));
     }
-
+    
     @Test
+    void testDeleteEmployeeFailure() throws Exception {
+        doThrow(new IllegalArgumentException("Unable to delete user")).when(adminService).deleteEmployee(anyLong());
+
+        mockMvc.perform(delete("/api/admin/deleteEmployees/1"))
+               .andExpect(status().isNotFound())
+               .andExpect(content().string("Unable to delete user: Unable to delete user"));
+    }
+    
+       @Test
     void testUpdateEmployee() throws Exception {
         UserRequest userRequest = new UserRequest("Employee1", "Emp", "emp@nucleusteq.com", "password", "EMPLOYEE");
         doNothing().when(adminService).updateEmployee(anyLong(), any(UserRequest.class));
@@ -175,6 +283,18 @@ public class AdminControllerTests {
                 .content(new ObjectMapper().writeValueAsString(userRequest)))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Employee details updated successfully"));
+    }
+    
+    @Test
+    void testUpdateEmployeeFailure() throws Exception {
+        UserRequest userRequest = new UserRequest("Employee1", "Emp", "emp@nucleusteq.com", "password", "EMPLOYEE");
+        doThrow(new IllegalArgumentException("Unable to update employee details")).when(adminService).updateEmployee(anyLong(), any(UserRequest.class));
+
+        mockMvc.perform(put("/api/admin/updateEmployee/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(userRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Unable to update employee details"));
     }
     
     @Test
@@ -190,6 +310,15 @@ public class AdminControllerTests {
     }
 
     @Test
+    void testGetAllResourceRequestsFailure() throws Exception {
+        when(adminService.getAllResourceRequests()).thenThrow(new RuntimeException("Internal server error"));
+
+        mockMvc.perform(get("/api/admin/requests"))
+               .andExpect(status().isInternalServerError())
+               .andExpect(content().string(""));
+    }
+    
+    @Test
     void testApproveResourceRequest() throws Exception {
         RequestResource requestResource = new RequestResource();
         requestResource.setRequestId(1L);
@@ -202,6 +331,15 @@ public class AdminControllerTests {
     }
 
     @Test
+    void testApproveResourceRequestFailure() throws Exception {
+        when(adminService.approveResourceRequest(anyLong())).thenThrow(new IllegalArgumentException("Unable to approve resource request"));
+
+        mockMvc.perform(put("/api/admin/requests/1/approve"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(""));
+    }
+    
+    @Test
     void testRejectResourceRequest() throws Exception {
         RequestResource requestResource = new RequestResource();
         requestResource.setRequestId(1L);
@@ -211,5 +349,13 @@ public class AdminControllerTests {
         mockMvc.perform(put("/api/admin/requests/1/reject"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("REJECTED"));
+    }
+    @Test
+    void testRejectResourceRequestFailure() throws Exception {
+        when(adminService.rejectResourceRequest(anyLong())).thenThrow(new IllegalArgumentException("Unable to reject resource request"));
+
+        mockMvc.perform(put("/api/admin/requests/1/reject"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(""));
     }
 }

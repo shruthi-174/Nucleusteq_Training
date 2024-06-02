@@ -42,7 +42,7 @@ public class UserController {
             );
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect email or password");
-        }
+        } 
 
         final UserDetails userDetails = userService.loadUserByUsername(userRequest.getEmail());
         final String jwt = jwtUtil.generateToken(userDetails);
@@ -50,16 +50,14 @@ public class UserController {
         return ResponseEntity.ok(jwt); 
     }
     
+    
     @GetMapping("/api/users/role")
-    public ResponseEntity<?> getUserRole() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userEmail = authentication.getName();
-        
-        UserDetails userDetails = userService.loadUserByUsername(userEmail);
-        String role = userDetails.getAuthorities().iterator().next().getAuthority();
-        
+    public ResponseEntity<?> getUserRole(@RequestHeader("Authorization") String token) {
+        String jwtToken = token.substring(7);
+        String role = jwtUtil.extractClaim(jwtToken, claims -> claims.get("role", String.class));
         return ResponseEntity.ok(role);
     }
+
     @GetMapping("/api/users/email")
     public ResponseEntity<?> getUserByEmail() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

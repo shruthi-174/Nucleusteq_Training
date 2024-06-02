@@ -41,7 +41,7 @@ public class EmployeeService {
 	    
 	    public boolean updateUserProfile(Long userId, UserRequest userRequest) {
 	        User user = userRepository.findById(userId)
-	                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
+	                .orElseThrow(() -> new IllegalArgumentException("Employee not found with id: " + userId));
 	        if (!user.getEmail().equals(userRequest.getEmail()) && userRepository.findByEmail(userRequest.getEmail()) != null) {
 	            throw new IllegalArgumentException("Email already exists");
 	        }
@@ -56,21 +56,19 @@ public class EmployeeService {
 	    }
 	    
 	    public void addSkill(Long employeeId, String skillName) {
-	        User employee = userRepository.findById(employeeId)
-	                .orElseThrow(() -> new IllegalArgumentException("Employee not found with id: " + employeeId));
+	        String SkillName = skillName.replaceAll("\\s+", " ").trim();
 
-	        String cleanedSkillName = skillName.replaceAll("\\s+", " ").trim();
-
-	        Skill skill = skillRepository.findByNameIgnoreCase(cleanedSkillName)
+	        Skill skill = skillRepository.findByNameIgnoreCase(SkillName)
 	                .orElseGet(() -> {
 	                    Skill newSkill = new Skill();
-	                    newSkill.setName(cleanedSkillName);
+	                    newSkill.setName(SkillName);
 	                    return skillRepository.save(newSkill);
 	                });
 
 	        EmployeeSkill employeeSkill = new EmployeeSkill(new EmployeeSkill.EmployeeSkillId(employeeId, skill.getSkillId()));
 	        employeeSkillRepository.save(employeeSkill);
 	    }
+	    
 	    public List<String> getSkillsForEmployee(Long employeeId) {
 	        return employeeSkillRepository.findByIdEmployeeUserId(employeeId).stream()
 	                .map(es -> skillRepository.findById(es.getId().getSkillId()))
@@ -84,7 +82,7 @@ public class EmployeeService {
 	        User employee = userRepository.findById(employeeId).orElseThrow(() -> new RuntimeException("Employee not found"));
 	        List<Assignment> assignments = assignmentRepository.findByEmployeeUserId(employee.getUserId());
 
-	        List<ProjectDetails> projectDetails = new ArrayList<>();
+	        List<ProjectDetails> projectDetailsList = new ArrayList<>();
 
 	        for (Assignment assignment : assignments) {
 	            Project project = assignment.getProject();
@@ -99,25 +97,25 @@ public class EmployeeService {
 	                    employeeNames
 	            );
 
-	            projectDetails.add(projectDetail);
+	            projectDetailsList.add(projectDetail);
 	        }
 
-	        return projectDetails;
+	        return projectDetailsList;
 	    }
 	    
 	    public List<User> getAllEmployees() {
-	        if (userRepository == null) {
-	            throw new IllegalStateException("Employee not found.");
+	        List<User> employees = userRepository.findByRole(User.Role.EMPLOYEE);
+	        if (employees == null || employees.isEmpty()) {
+	            throw new IllegalStateException("Employees not found.");
 	        }
-	        return userRepository.findByRole(User.Role.EMPLOYEE);
+	        return employees;
 	    }
-	    
+
 
 	    public List<User> getAllManagers() {
-	    	 if (userRepository == null) {
-	             throw new IllegalStateException("Manager not found.");
-	         }
-	         return userRepository.findByRole(User.Role.MANAGER);
+	        List<User> managers = userRepository.findByRole(User.Role.MANAGER);
+	        if (managers == null || managers.isEmpty()) {
+	            throw new IllegalStateException("Manager not found.");
 	        }
-
-}
+	        return managers;
+	    }}

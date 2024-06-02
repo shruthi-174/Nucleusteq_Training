@@ -36,7 +36,7 @@ public class UserService implements UserDetailsService {
                 user.getEmail(),
                 user.getPassword(),
                 authorities
-        );
+        ); 
     }
 
     public User getUser(Long userId) {

@@ -38,7 +38,8 @@ public class JwtUtil {
         return claimsResolver.apply(claims);
     }
 
-    private Claims extractAllClaims(String token) {
+    @SuppressWarnings("deprecation")
+	private Claims extractAllClaims(String token) {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
     }
 
@@ -51,10 +52,13 @@ public class JwtUtil {
 
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
+        String role = userDetails.getAuthorities().iterator().next().getAuthority();
+        claims.put("role", role);
         return createToken(claims, userDetails.getUsername());
     }
 
-    private String createToken(Map<String, Object> claims, String subject) {
+    @SuppressWarnings("deprecation")
+	private String createToken(Map<String, Object> claims, String subject) {
         Date expirationTime = new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 50);
         System.out.println("Token Expiration Time: " + expirationTime);
 

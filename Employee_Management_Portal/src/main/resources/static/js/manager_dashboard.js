@@ -226,41 +226,46 @@ document.addEventListener('DOMContentLoaded', () => {
     
     async function loadProjectsAndEmployees() {
         try {
-            const [projects, employees] = await Promise.all([
-                fetch('/api/manager/projects', {
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                    },
-                })
-                .then(response => response.json()),
-                fetchAllUsers(),
-            ]);
+            const [employees] = await Promise.all([fetchAllUsers()]);
 
             const projectSelect = document.getElementById('projectName');
             const managerId = document.getElementById('managerId');
             projectSelect.innerHTML = '';
-
             const defaultOption = document.createElement('option');
             defaultOption.value = '';
             defaultOption.text = 'Select Project';
             projectSelect.add(defaultOption);
 
-            projects.forEach(project => {
-                const option = document.createElement('option');
-                option.value = project.id || project.projectId; 
-                option.text = project.name;
-                projectSelect.add(option);
+            const loggedInManagerId = await getUserId();
+            console.log('Logged-in Manager ID:', loggedInManagerId);
+
+            const response = await fetch(`/api/manager/projects/${loggedInManagerId}`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                },
             });
 
-            const loggedInManagerId = await getUserId();
-            console.log('Logged In Manager ID:', loggedInManagerId);
+            if (response.ok) {
+                const managersProjects = await response.json();
+                console.log('Manager\'s Projects:', managersProjects);
+
+                managersProjects.forEach(project => {
+                    const option = document.createElement('option');
+                    option.value = project.projectId || project.id;
+                    option.text = project.name;
+                    projectSelect.add(option);
+                });
+            } else {
+                const error = await response.text();
+                console.error('Error fetching manager projects:', error);
+            }
+
             managerId.value = loggedInManagerId;
         } catch (error) {
             console.error('Error:', error);
             alert('An error occurred while loading projects and employees');
         }
     }
-
     
     if (createRequestForm) {
         createRequestForm.addEventListener('submit', async (e) => {
