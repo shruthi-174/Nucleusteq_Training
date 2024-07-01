@@ -48,25 +48,6 @@ public class Food {
 	private Date creationDate;
 
 
-	public Food(Long id, String name, String description, Long price, Category foodCategory, List<String> images,
-			boolean available, Restaurant restaurant, boolean isVegetarian, boolean isSeasonal,
-			List<IngredientsItem> ingredients, Date creationDate) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.description = description;
-		this.price = price;
-		this.foodCategory = foodCategory;
-		this.images = images;
-		this.available = available;
-		this.restaurant = restaurant;
-		this.isVegetarian = isVegetarian;
-		this.isSeasonal = isSeasonal;
-		this.ingredients = ingredients;
-		this.creationDate = creationDate;
-	}
-
-
 	public Long getId() {
 		return id;
 	}
@@ -185,6 +166,7 @@ public class Food {
 	public void setCreationDate(Date creationDate) {
 		this.creationDate = creationDate;
 	}
+
 
 	
 }

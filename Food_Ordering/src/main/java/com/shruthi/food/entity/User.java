@@ -6,14 +6,21 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.shruthi.food.dto.RestuarantDTO;
+import com.shruthi.food.entity.Address;
+import com.shruthi.food.dto.RestaurantDTO;
 
 @Entity
+@Table(name = "users")
 public class User {
 	
 	@Id
@@ -26,30 +33,19 @@ public class User {
 	
 	private String password;
 	
-	private USER_ROLE role;
+    @Enumerated(EnumType.STRING)
+    private USER_ROLE role;
 	
 	@JsonIgnore
 	@OneToMany(cascade= CascadeType.ALL, mappedBy="customer")
 	private List<Order> orders=new ArrayList<>();
-	
-	@ElementCollection
-	private List<RestuarantDTO> favorites=new ArrayList<>();
-	
-	@OneToMany(cascade= CascadeType.ALL, orphanRemoval=true)
-	private List<Address> addresses=new ArrayList<>();
 
-	public User(Long id, String fullName, String email, String password, USER_ROLE role, List<Order> orders,
-			List<RestuarantDTO> favorites, List<Address> addresses) {
-		super();
-		this.id = id;
-		this.fullName = fullName;
-		this.email = email;
-		this.password = password;
-		this.role = role;
-		this.orders = orders;
-		this.favorites = favorites;
-		this.addresses = addresses;
-	}
+	 @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	    @JoinColumn(name = "user_id")
+	    private List<UserFavoriteRestaurant> favorites = new ArrayList<>();
+	 
+	 @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "user")
+	    private List<Address> addresses = new ArrayList<>();
 
 	public Long getId() {
 		return id;
@@ -99,11 +95,11 @@ public class User {
 		this.orders = orders;
 	}
 
-	public List<RestuarantDTO> getFavorites() {
+	public List<UserFavoriteRestaurant> getFavorites() {
 		return favorites;
 	}
 
-	public void setFavorites(List<RestuarantDTO> favorites) {
+	public void setFavorites(List<UserFavoriteRestaurant> favorites) {
 		this.favorites = favorites;
 	}
 
@@ -114,6 +110,7 @@ public class User {
 	public void setAddresses(List<Address> addresses) {
 		this.addresses = addresses;
 	}
+
 	
-	
+
 }

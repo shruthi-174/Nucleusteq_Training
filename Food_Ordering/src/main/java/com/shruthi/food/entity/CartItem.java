@@ -8,23 +8,29 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-public class OrderItem {
-	
+public class CartItem {
 	@Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    private Long id;
-    
-    @ManyToOne
-    private Food food;
-    
-    private int quantity;
-    
-    private Long totalPrice;
-
-    @ElementCollection
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	private Long id;
+	
+	@JsonIgnore
+	@ManyToOne
+	private Cart cart;
+	
+	@ManyToOne
+	private Food food;
+	
+	private int quantity;
+	
+	@ElementCollection
 	private List<String> ingredients;
+	
+	private Long totalPrice;
 
 	public Long getId() {
 		return id;
@@ -32,6 +38,14 @@ public class OrderItem {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Cart getCart() {
+		return cart;
+	}
+
+	public void setCart(Cart cart) {
+		this.cart = cart;
 	}
 
 	public Food getFood() {
@@ -50,6 +64,14 @@ public class OrderItem {
 		this.quantity = quantity;
 	}
 
+	public List<String> getIngredients() {
+		return ingredients;
+	}
+
+	public void setIngredients(List<String> ingredients) {
+		this.ingredients = ingredients;
+	}
+
 	public Long getTotalPrice() {
 		return totalPrice;
 	}
@@ -58,13 +80,5 @@ public class OrderItem {
 		this.totalPrice = totalPrice;
 	}
 
-	public List<String> getIngredients() {
-		return ingredients;
-	}
-
-	public void setIngredients(List<String> ingredients) {
-		this.ingredients = ingredients;
-	}
-	
 	
 }

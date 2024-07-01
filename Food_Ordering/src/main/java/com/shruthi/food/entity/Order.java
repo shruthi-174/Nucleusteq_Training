@@ -9,10 +9,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.shruthi.food.entity.Address;
 
 @Entity
+@Table(name="orders")
 public class Order {
 	
 	@Id
@@ -41,21 +44,6 @@ public class Order {
 	private int totalItem;
 	
 	private int totalPrice;
-
-	public Order(Long id, User customer, Restaurant restaurant, Long totalAmount, String orderStatus, Date createdAt,
-			Address deliveryAddress, List<OrderItem> item, int totalItem, int totalPrice) {
-		super();
-		this.id = id;
-		this.customer = customer;
-		this.restaurant = restaurant;
-		this.totalAmount = totalAmount;
-		this.orderStatus = orderStatus;
-		this.createdAt = createdAt;
-		this.deliveryAddress = deliveryAddress;
-		this.item = item;
-		this.totalItem = totalItem;
-		this.totalPrice = totalPrice;
-	}
 
 	public Long getId() {
 		return id;
@@ -136,6 +124,6 @@ public class Order {
 	public void setTotalPrice(int totalPrice) {
 		this.totalPrice = totalPrice;
 	}
-	
+
 	
 }

@@ -1,37 +1,40 @@
 package com.shruthi.food.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-public class IngredientsItem {
+public class IngredientCategory {
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	
 	private String name;
 	
-	@ManyToOne
-	private  IngredientCategory category;
-	
 	@JsonIgnore
 	@ManyToOne
 	private Restaurant restaurant;
 	
-	private boolean isStock=true;
+	@OneToMany(mappedBy="category", cascade=CascadeType.ALL)
+	private List<IngredientsItem> ingredientsItem=new ArrayList<>();
 
-	public IngredientsItem(Long id, String name, IngredientCategory category, Restaurant restaurant, boolean isStock) {
+	public IngredientCategory(Long id, String name, Restaurant restaurant, List<IngredientsItem> ingredientsItem) {
 		super();
 		this.id = id;
 		this.name = name;
-		this.category = category;
 		this.restaurant = restaurant;
-		this.isStock = isStock;
+		this.ingredientsItem = ingredientsItem;
 	}
 
 	public Long getId() {
@@ -50,14 +53,6 @@ public class IngredientsItem {
 		this.name = name;
 	}
 
-	public IngredientCategory getCategory() {
-		return category;
-	}
-
-	public void setCategory(IngredientCategory category) {
-		this.category = category;
-	}
-
 	public Restaurant getRestaurant() {
 		return restaurant;
 	}
@@ -66,12 +61,12 @@ public class IngredientsItem {
 		this.restaurant = restaurant;
 	}
 
-	public boolean isStock() {
-		return isStock;
+	public List<IngredientsItem> getIngredientsItem() {
+		return ingredientsItem;
 	}
 
-	public void setStock(boolean isStock) {
-		this.isStock = isStock;
+	public void setIngredientsItem(List<IngredientsItem> ingredientsItem) {
+		this.ingredientsItem = ingredientsItem;
 	}
 	
 	
