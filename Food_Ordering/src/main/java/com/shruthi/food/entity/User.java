@@ -16,6 +16,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.shruthi.food.entity.Address;
 import com.shruthi.food.dto.RestaurantDTO;
 
@@ -31,10 +32,10 @@ public class User {
 	
 	private String email;
 	
+	@JsonProperty(access= JsonProperty.Access.WRITE_ONLY)
 	private String password;
 	
-    @Enumerated(EnumType.STRING)
-    private USER_ROLE role;
+    private USER_ROLE role=USER_ROLE.ROLE_CUSTOMER;
 	
 	@JsonIgnore
 	@OneToMany(cascade= CascadeType.ALL, mappedBy="customer")

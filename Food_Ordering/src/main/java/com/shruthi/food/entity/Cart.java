@@ -33,6 +33,10 @@ public class Cart {
 		this.items = items;
 	}
 
+	public Cart() {
+		// TODO Auto-generated constructor stub
+	}
+
 	public Long getId() {
 		return id;
 	}
